@@ -60,8 +60,8 @@ const DashboardPage = () => {
 
   return (
     <section className="mx-auto max-w-6xl px-6 py-12">
-      <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
-        <div className="flex-1 space-y-6">
+      <div className="space-y-6">
+        <div className="space-y-6">
           <div>
             <h2 className="text-3xl font-semibold text-slate-900">
               Welcome back, Ananya
@@ -107,29 +107,31 @@ const DashboardPage = () => {
               Visit the Exams tab to browse the full catalog and purchase plans.
             </p>
           </div>
+          <div className="grid gap-4 lg:grid-cols-2">
+            <div className="rounded-2xl border border-blue-100 bg-blue-50 p-6">
+              <h3 className="text-lg font-semibold text-blue-900">
+                Subscription alerts
+              </h3>
+              <p className="mt-2 text-sm text-blue-800">
+                Keep an eye on renewals and expiring access to stay exam-ready.
+              </p>
+              <button className="mt-4 rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white">
+                Review plans
+              </button>
+            </div>
+            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+              <h3 className="text-lg font-semibold text-slate-900">
+                AI study plan
+              </h3>
+              <p className="mt-2 text-sm text-slate-600">
+                Generate a personalized plan based on your exam catalog.
+              </p>
+              <button className="mt-4 rounded-md border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700">
+                Generate plan
+              </button>
+            </div>
+          </div>
         </div>
-        <aside className="w-full max-w-sm space-y-4">
-          <div className="rounded-2xl border border-blue-100 bg-blue-50 p-6">
-            <h3 className="text-lg font-semibold text-blue-900">
-              Subscription alerts
-            </h3>
-            <p className="mt-2 text-sm text-blue-800">
-              Keep an eye on renewals and expiring access to stay exam-ready.
-            </p>
-            <button className="mt-4 rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white">
-              Review plans
-            </button>
-          </div>
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h3 className="text-lg font-semibold text-slate-900">AI study plan</h3>
-            <p className="mt-2 text-sm text-slate-600">
-              Generate a personalized plan based on your exam catalog.
-            </p>
-            <button className="mt-4 rounded-md border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700">
-              Generate plan
-            </button>
-          </div>
-        </aside>
       </div>
     </section>
   );
