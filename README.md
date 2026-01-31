@@ -1,10 +1,4 @@
-<<<<<<< HEAD
-# Pass4Sure
-
 **Pass4Sure** – Exam preparation and practice platform built with React, Node.js, Express, and PostgreSQL.
-
-
-## Pass4Sure
 
 ### Features
 
