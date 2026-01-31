@@ -35,7 +35,7 @@ router.post("/signup", async (req, res) => {
     }
 
     const result = await query(
-      "insert into users (name, email, password, role) values ($1, $2, $3, $4) returning id, name, email, role",
+      "insert into users (name, email, password_hash, role) values ($1, $2, $3, $4) returning id, name, email, role",
       [name, email, passwordHash, "user"]
     );
 
@@ -60,14 +60,14 @@ router.post("/login", async (req, res) => {
   }
 
   const { email, password } = parsed.data;
-  const result = await query("select id, name, email, role, password from users where email = $1", [email]);
+  const result = await query("select id, name, email, role, password_hash from users where email = $1", [email]);
   const user = result.rows[0];
 
   if (!user) {
     return res.status(404).json({ message: "Account not found for this email" });
   }
 
-  const valid = await bcrypt.compare(password, user.password);
+  const valid = await bcrypt.compare(password, user.password_hash);
   if (!valid) {
     return res.status(401).json({ message: "Password does not match" });
   }
