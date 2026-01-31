@@ -9,7 +9,6 @@ const pageSize = 6;
 const defaultForm = {
   subjectId: "",
   topicId: "",
-  atomicTopicId: "",
   text: "",
   optionA: "",
   optionB: "",
@@ -24,7 +23,6 @@ const AdminQuestions = () => {
   const [questions, setQuestions] = useState([]);
   const [subjects, setSubjects] = useState([]);
   const [topics, setTopics] = useState([]);
-  const [atomicTopics, setAtomicTopics] = useState([]);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -34,16 +32,14 @@ const AdminQuestions = () => {
   const [activeQuestion, setActiveQuestion] = useState(null);
 
   const loadData = async () => {
-    const [questionsRes, subjectsRes, topicsRes, atomicRes] = await Promise.all([
+    const [questionsRes, subjectsRes, topicsRes] = await Promise.all([
       api.get("/api/admin/questions"),
       api.get("/api/admin/subjects"),
-      api.get("/api/admin/topics"),
-      api.get("/api/admin/atomic-topics")
+      api.get("/api/admin/topics")
     ]);
     setQuestions(questionsRes.data.questions || []);
     setSubjects(subjectsRes.data.subjects || []);
     setTopics(topicsRes.data.topics || []);
-    setAtomicTopics(atomicRes.data.atomicTopics || []);
   };
 
   useEffect(() => {
@@ -81,7 +77,6 @@ const AdminQuestions = () => {
     setFormData({
       subjectId: question.subject_id || "",
       topicId: question.topic_id || "",
-      atomicTopicId: question.atomic_topic_id || "",
       text: question.text || "",
       optionA: question.options?.a || "",
       optionB: question.options?.b || "",
@@ -104,7 +99,6 @@ const AdminQuestions = () => {
     await api.post("/api/admin/questions", {
       subjectId: Number(formData.subjectId),
       topicId: Number(formData.topicId),
-      atomicTopicId: formData.atomicTopicId ? Number(formData.atomicTopicId) : null,
       text: formData.text,
       options: { a: formData.optionA, b: formData.optionB, c: formData.optionC },
       correctAnswer: formData.correctAnswer,
@@ -121,7 +115,6 @@ const AdminQuestions = () => {
     await api.put(`/api/admin/questions/${activeQuestion.id}`, {
       subjectId: Number(formData.subjectId),
       topicId: Number(formData.topicId),
-      atomicTopicId: formData.atomicTopicId ? Number(formData.atomicTopicId) : null,
       text: formData.text,
       options: { a: formData.optionA, b: formData.optionB, c: formData.optionC },
       correctAnswer: formData.correctAnswer,
@@ -141,9 +134,6 @@ const AdminQuestions = () => {
 
   const filteredTopics = topics.filter(
     (topic) => !formData.subjectId || Number(topic.subject_id) === Number(formData.subjectId)
-  );
-  const filteredAtomicTopics = atomicTopics.filter(
-    (topic) => !formData.topicId || Number(topic.topic_id) === Number(formData.topicId)
   );
 
   return (
@@ -218,7 +208,7 @@ const AdminQuestions = () => {
 
       <Modal open={isAddOpen} title="Add Question" onClose={() => setIsAddOpen(false)}>
         <form className="space-y-4" onSubmit={handleAdd}>
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-2">
             <label className="text-sm text-slate-600">
               Subject
               <select
@@ -248,22 +238,6 @@ const AdminQuestions = () => {
                 <option value="">Select topic</option>
                 {filteredTopics.map((topic) => (
                   <option key={topic.topic_id} value={topic.topic_id}>
-                    {topic.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="text-sm text-slate-600">
-              Atomic Topic
-              <select
-                name="atomicTopicId"
-                value={formData.atomicTopicId}
-                onChange={handleChange}
-                className="mt-1 w-full rounded-md border border-slate-200 px-3 py-2"
-              >
-                <option value="">Optional</option>
-                {filteredAtomicTopics.map((topic) => (
-                  <option key={topic.atomic_topic_id} value={topic.atomic_topic_id}>
                     {topic.name}
                   </option>
                 ))}
@@ -377,7 +351,7 @@ const AdminQuestions = () => {
 
       <Modal open={isEditOpen} title="Edit Question" onClose={() => setIsEditOpen(false)}>
         <form className="space-y-4" onSubmit={handleEdit}>
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-2">
             <label className="text-sm text-slate-600">
               Subject
               <select
@@ -407,22 +381,6 @@ const AdminQuestions = () => {
                 <option value="">Select topic</option>
                 {filteredTopics.map((topic) => (
                   <option key={topic.topic_id} value={topic.topic_id}>
-                    {topic.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="text-sm text-slate-600">
-              Atomic Topic
-              <select
-                name="atomicTopicId"
-                value={formData.atomicTopicId}
-                onChange={handleChange}
-                className="mt-1 w-full rounded-md border border-slate-200 px-3 py-2"
-              >
-                <option value="">Optional</option>
-                {filteredAtomicTopics.map((topic) => (
-                  <option key={topic.atomic_topic_id} value={topic.atomic_topic_id}>
                     {topic.name}
                   </option>
                 ))}

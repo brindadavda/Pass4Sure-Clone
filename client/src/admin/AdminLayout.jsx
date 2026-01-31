@@ -3,9 +3,9 @@ import { useAuth } from "../context/AuthContext.jsx";
 
 const navItems = [
   { label: "Dashboard Overview", to: "/admin" },
+  { label: "Manage Exams", to: "/admin/exams" },
   { label: "Manage Subjects", to: "/admin/subjects" },
   { label: "Manage Topics", to: "/admin/topics" },
-  { label: "Manage Atomic Topics", to: "/admin/atomic-topics" },
   { label: "Manage Questions", to: "/admin/questions" },
   { label: "Manage Demo Codes", to: "/admin/demo-codes" },
   { label: "Manage Users", to: "/admin/users" },
@@ -14,6 +14,16 @@ const navItems = [
 
 const AdminLayout = () => {
   const { user } = useAuth();
+  const initials = user?.name
+    ? user.name
+        .split(" ")
+        .map((part) => part[0])
+        .join("")
+        .slice(0, 2)
+        .toUpperCase()
+    : user?.email
+      ? user.email.slice(0, 2).toUpperCase()
+      : "AD";
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -54,7 +64,9 @@ const AdminLayout = () => {
               <div className="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700">
                 {user?.email}
               </div>
-              <div className="h-9 w-9 rounded-full bg-slate-200" />
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-200 text-xs font-semibold text-slate-600">
+                {initials}
+              </div>
             </div>
           </header>
 

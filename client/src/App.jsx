@@ -13,9 +13,9 @@ import SignupPage from "./pages/SignupPage.jsx";
 import AdminLayout from "./admin/AdminLayout.jsx";
 import AdminProtectedRoute from "./admin/AdminProtectedRoute.jsx";
 import AdminDashboard from "./admin/pages/AdminDashboard.jsx";
+import AdminExams from "./admin/pages/AdminExams.jsx";
 import AdminSubjects from "./admin/pages/AdminSubjects.jsx";
 import AdminTopics from "./admin/pages/AdminTopics.jsx";
-import AdminAtomicTopics from "./admin/pages/AdminAtomicTopics.jsx";
 import AdminQuestions from "./admin/pages/AdminQuestions.jsx";
 import AdminDemoCodes from "./admin/pages/AdminDemoCodes.jsx";
 import AdminUsers from "./admin/pages/AdminUsers.jsx";
@@ -60,9 +60,9 @@ const App = () => (
           }
         >
           <Route index element={<AdminDashboard />} />
+          <Route path="exams" element={<AdminExams />} />
           <Route path="subjects" element={<AdminSubjects />} />
           <Route path="topics" element={<AdminTopics />} />
-          <Route path="atomic-topics" element={<AdminAtomicTopics />} />
           <Route path="questions" element={<AdminQuestions />} />
           <Route path="demo-codes" element={<AdminDemoCodes />} />
           <Route path="users" element={<AdminUsers />} />

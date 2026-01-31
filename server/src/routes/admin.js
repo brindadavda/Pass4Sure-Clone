@@ -66,33 +66,33 @@ router.delete("/topics/:id", async (req, res) => {
   res.status(204).send();
 });
 
-router.get("/atomic-topics", async (req, res) => {
+router.get("/exams", async (req, res) => {
   const result = await query(
-    "select atomic_topic_id, topic_id, name, description from atomic_topics order by atomic_topic_id"
+    "select id, title, category, price, validity_days, description from exams order by title"
   );
-  res.json({ atomicTopics: result.rows });
+  res.json({ exams: result.rows });
 });
 
-router.post("/atomic-topics", async (req, res) => {
-  const { atomicTopicId, topicId, name, description } = req.body;
+router.post("/exams", async (req, res) => {
+  const { title, category, price, validityDays, description } = req.body;
   const result = await query(
-    "insert into atomic_topics (atomic_topic_id, topic_id, name, description) values ($1, $2, $3, $4) returning *",
-    [atomicTopicId, topicId, name, description]
+    "insert into exams (title, category, price, validity_days, description) values ($1, $2, $3, $4, $5) returning *",
+    [title, category, price, validityDays, description]
   );
-  res.status(201).json({ atomicTopic: result.rows[0] });
+  res.status(201).json({ exam: result.rows[0] });
 });
 
-router.put("/atomic-topics/:id", async (req, res) => {
-  const { topicId, name, description } = req.body;
+router.put("/exams/:id", async (req, res) => {
+  const { title, category, price, validityDays, description } = req.body;
   const result = await query(
-    "update atomic_topics set topic_id = $1, name = $2, description = $3 where atomic_topic_id = $4 returning *",
-    [topicId, name, description, req.params.id]
+    "update exams set title = $1, category = $2, price = $3, validity_days = $4, description = $5 where id = $6 returning *",
+    [title, category, price, validityDays, description, req.params.id]
   );
-  res.json({ atomicTopic: result.rows[0] });
+  res.json({ exam: result.rows[0] });
 });
 
-router.delete("/atomic-topics/:id", async (req, res) => {
-  await query("delete from atomic_topics where atomic_topic_id = $1", [req.params.id]);
+router.delete("/exams/:id", async (req, res) => {
+  await query("delete from exams where id = $1", [req.params.id]);
   res.status(204).send();
 });
 
