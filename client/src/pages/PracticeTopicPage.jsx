@@ -108,11 +108,17 @@ const PracticeTopicPage = () => {
 
                 {selectedTopicId === topic.topic_id && (
                   <div className="mt-4 rounded-xl border bg-slate-50 p-4">
+                    <p className="text-xs text-slate-500">
+                      Demo code:{" "}
+                      <span className="font-semibold">
+                        {demoCodes[topic.topic_id] || "--"}
+                      </span>
+                    </p>
                     <input
                       value={enteredCode}
                       onChange={(event) => setEnteredCode(event.target.value)}
                       placeholder="Enter demo code"
-                      className="w-full rounded-lg border px-3 py-2 text-sm"
+                      className="mt-3 w-full rounded-lg border px-3 py-2 text-sm"
                     />
 
                     {codeError && (
