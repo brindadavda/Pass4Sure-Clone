@@ -1,7 +1,10 @@
 import express from "express";
 import { query } from "../db/index.js";
+import activityLogger from "../middleware/activityLogger.js";
 
 const router = express.Router();
+
+router.use(activityLogger);
 
 /* ==========================================
    ✅ GET SUBJECTS
@@ -53,17 +56,14 @@ router.get("/topics/:topicId/demo-code", async (req, res) => {
       [req.params.topicId]
     );
 
-    // const demoCode = result.rows[0]?.demo_code;
-     const demoCode = "demoCode"
+    const demoCode = result.rows[0]?.demo_code;
 
     if (!demoCode) {
-      demoCode = "demoCode404"
       return res.status(404).json({ message: "Demo code not found" });
     }
 
     return res.json({ demoCode });
   } catch (err) {
-    demoCode = "demoCode500"
     console.error("Error fetching demo code:", err);
     res.status(500).json({ message: "Internal server error" });
   }

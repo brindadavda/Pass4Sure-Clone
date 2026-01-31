@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import { logActivity } from "./activityLogger.js";
 
 export const authenticate = (req, res, next) => {
   const header = req.headers.authorization;
@@ -13,6 +14,20 @@ export const authenticate = (req, res, next) => {
   } catch (error) {
     return res.status(401).json({ message: "Invalid token" });
   }
+};
+
+export const logLogoutActivity = async (req, res, next) => {
+  try {
+    await logActivity({
+      userId: req.user?.sub || null,
+      activityType: "logout",
+      page: req.originalUrl,
+      details: {}
+    });
+  } catch (error) {
+    console.error("Failed to log logout activity", error.message);
+  }
+  return next();
 };
 
 export const authorizeRole = (role) => (req, res, next) => {

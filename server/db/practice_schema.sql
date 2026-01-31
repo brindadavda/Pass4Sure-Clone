@@ -48,6 +48,7 @@ CREATE TABLE IF NOT EXISTS questions (
 
   subject_id INTEGER,
   topic_id INTEGER,
+  atomic_topic_id INTEGER,
 
   text TEXT NOT NULL,
   options JSONB NOT NULL,
@@ -79,6 +80,24 @@ CREATE TABLE IF NOT EXISTS demo_codes (
     FOREIGN KEY (topic_id)
     REFERENCES topics(topic_id)
     ON DELETE CASCADE
+);
+
+------------------------------------------------
+-- USERS ROLE EXTENSION
+------------------------------------------------
+ALTER TABLE users
+ADD COLUMN IF NOT EXISTS role TEXT DEFAULT 'user';
+
+------------------------------------------------
+-- USER ACTIVITY TABLE
+------------------------------------------------
+CREATE TABLE IF NOT EXISTS user_activity (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NULL,
+  activity_type TEXT NOT NULL,
+  page TEXT,
+  details JSONB,
+  created_at TIMESTAMP DEFAULT now()
 );
 
 
