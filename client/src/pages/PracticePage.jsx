@@ -14,65 +14,122 @@
 // ];
 
 import { useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import axios from "axios";
 
-const examId = "634de6ef-8483-481b-9ae5-e747ba7f5e04";
-
-const PracticePage = ({ examId }) => {
+const PracticePage = () => {
+  const [subjects, setSubjects] = useState([]);
+  const [topics, setTopics] = useState([]);
+  const [selectedSubjectId, setSelectedSubjectId] = useState("");
+  const [selectedTopicId, setSelectedTopicId] = useState("");
+  const [demoCode, setDemoCode] = useState("");
+  const [enteredCode, setEnteredCode] = useState("");
+  const [codeError, setCodeError] = useState("");
   const [questions, setQuestions] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [answers, setAnswers] = useState({}); // store selected answers
+  const [loadingQuestions, setLoadingQuestions] = useState(false);
 
-  const token = localStorage.getItem("token"); // replace with your auth logic
-  const API_URL = import.meta.env.VITE_API_URL+"/api";
+  const [searchParams] = useSearchParams();
+  const subjectIdParam = searchParams.get("subjectId");
+  const topicIdParam = searchParams.get("topicId");
+  const navigate = useNavigate();
+
+  const API_URL = `${import.meta.env.VITE_API_URL}/api`;
 
   useEffect(() => {
-    const fetchQuestions = async () => {
+    const fetchSubjects = async () => {
       try {
-        const res = await axios.get(`${API_URL}/questions/exam/${examId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setQuestions(res.data.questions);
+        const res = await axios.get(`${API_URL}/practice/subjects`);
+        setSubjects(res.data.subjects || []);
+      } catch (err) {
+        console.error("Failed to fetch subjects:", err);
+      }
+    };
+    fetchSubjects();
+  }, [API_URL]);
+
+  useEffect(() => {
+    if (subjectIdParam) {
+      setSelectedSubjectId(subjectIdParam);
+    }
+    if (topicIdParam) {
+      setSelectedTopicId(topicIdParam);
+    }
+  }, [subjectIdParam, topicIdParam]);
+
+  useEffect(() => {
+    if (!selectedSubjectId) {
+      setTopics([]);
+      return;
+    }
+    const fetchTopics = async () => {
+      try {
+        const res = await axios.get(
+          `${API_URL}/practice/subjects/${selectedSubjectId}/topics`
+        );
+        setTopics(res.data.topics || []);
+      } catch (err) {
+        console.error("Failed to fetch topics:", err);
+      }
+    };
+    fetchTopics();
+  }, [API_URL, selectedSubjectId]);
+
+  useEffect(() => {
+    if (!subjectIdParam || !topicIdParam) {
+      setQuestions([]);
+      return;
+    }
+    const fetchQuestions = async () => {
+      setLoadingQuestions(true);
+      try {
+        const res = await axios.get(
+          `${API_URL}/practice/questions?subjectId=${subjectIdParam}&topicId=${topicIdParam}`
+        );
+        setQuestions(res.data.questions || []);
       } catch (err) {
         console.error("Failed to fetch questions:", err);
       } finally {
-        setLoading(false);
+        setLoadingQuestions(false);
       }
     };
     fetchQuestions();
-  }, [examId]);
+  }, [API_URL, subjectIdParam, topicIdParam]);
 
-  const handleSelect = (questionId, option) => {
-    setAnswers({ ...answers, [questionId]: option });
+  const handleSubjectChange = (event) => {
+    const subjectId = event.target.value;
+    setSelectedSubjectId(subjectId);
+    setSelectedTopicId("");
+    setDemoCode("");
+    setEnteredCode("");
+    setCodeError("");
+    navigate("/practice");
   };
 
-  const handleSubmit = async () => {
+  const handleFreeDemo = async (topicId) => {
+    setSelectedTopicId(topicId);
+    setEnteredCode("");
+    setCodeError("");
     try {
-      for (const question of questions) {
-        const selected = answers[question.id];
-        if (!selected) continue;
-
-        const isCorrect = selected === question.correct_answer;
-
-        await axios.post(
-          `${API_URL}/questions/response`,
-          {
-            questionId: question.id,
-            answer: selected,
-            isCorrect,
-          },
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-      }
-      alert("Practice session submitted!");
+      const res = await axios.get(`${API_URL}/practice/topics/${topicId}/demo-code`);
+      setDemoCode(res.data.demoCode || "");
     } catch (err) {
-      console.error("Failed to submit responses:", err);
+      console.error("Failed to fetch demo code:", err);
+      setDemoCode("");
     }
   };
 
-  if (loading) return <p className="text-center py-10">Loading questions...</p>;
+  const handleVerifyCode = () => {
+    if (!demoCode) {
+      setCodeError("Demo code unavailable for this topic.");
+      return;
+    }
+    if (enteredCode.trim() !== demoCode) {
+      setCodeError("Incorrect code. Please try again.");
+      return;
+    }
+    setCodeError("");
+    navigate(`/practice?subjectId=${selectedSubjectId}&topicId=${selectedTopicId}`);
+  };
 
   return (
     <section className="mx-auto max-w-6xl px-6 py-12">
@@ -81,64 +138,139 @@ const PracticePage = ({ examId }) => {
           <div>
             <h2 className="text-2xl font-semibold text-slate-900">Practice Mode</h2>
             <p className="text-sm text-slate-600">
-              Immediate feedback, explanations, and bookmark tools.
+              Select a subject, unlock a demo topic, and start practicing.
             </p>
           </div>
           <div className="rounded-full bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-600">
-            12:45 remaining
+            Practice flow
           </div>
         </div>
 
-        <div className="mt-8 space-y-6">
-          {questions.map((question) => (
-            <div key={question.id} className="rounded-2xl border border-slate-200 p-5">
-              <p className="text-sm font-semibold text-slate-900">{question.text}</p>
-              <div className="mt-4 grid gap-3 md:grid-cols-2">
-                {question.options.map((option) => (
-                  <label
-                    key={option}
-                    className={`flex items-center gap-3 rounded-xl border px-4 py-3 text-sm ${
-                      answers[question.id] === option
-                        ? "border-blue-600 bg-blue-50 text-blue-700"
-                        : "border-slate-200 text-slate-700"
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name={`question-${question.id}`}
-                      checked={answers[question.id] === option}
-                      onChange={() => handleSelect(question.id, option)}
-                    />
-                    <span>{option}</span>
-                  </label>
-                ))}
-              </div>
+        <div className="mt-6">
+          <label className="text-sm font-semibold text-slate-700" htmlFor="subject">
+            Select Subject
+          </label>
+          <select
+            id="subject"
+            value={selectedSubjectId}
+            onChange={handleSubjectChange}
+            className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm"
+          >
+            <option value="">Select Subject</option>
+            {subjects.map((subject) => (
+              <option key={subject.subject_id} value={subject.subject_id}>
+                {subject.name}
+              </option>
+            ))}
+          </select>
+        </div>
 
-              {/* Optional: show explanation immediately */}
-              {answers[question.id] && (
-                <div className="mt-4 rounded-xl bg-slate-50 p-4 text-sm text-slate-600">
-                  <span className="font-semibold text-green-600">Correct:</span>{" "}
-                  {question.correct_answer}
-                  {question.explanation && (
-                    <p className="mt-1 text-gray-500">{question.explanation}</p>
+        {!subjectIdParam && (
+          <div className="mt-8">
+            <h3 className="text-lg font-semibold text-slate-900">Topics</h3>
+            <div className="mt-4 grid gap-4 md:grid-cols-2">
+              {topics.map((topic) => (
+                <div
+                  key={topic.topic_id}
+                  className="rounded-2xl border border-slate-200 p-5 shadow-sm"
+                >
+                  <h4 className="text-base font-semibold text-slate-900">
+                    {topic.name}
+                  </h4>
+                  <p className="mt-2 text-sm text-slate-600">{topic.description}</p>
+                  <button
+                    className="mt-4 rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white"
+                    onClick={() => handleFreeDemo(topic.topic_id)}
+                  >
+                    Free Demo
+                  </button>
+                  {selectedTopicId === topic.topic_id && (
+                    <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-4">
+                      <p className="text-xs text-slate-500">
+                        Demo code: <span className="font-semibold">{demoCode || "--"}</span>
+                      </p>
+                      <input
+                        value={enteredCode}
+                        onChange={(event) => setEnteredCode(event.target.value)}
+                        placeholder="Enter demo code"
+                        className="mt-3 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+                      />
+                      {codeError && (
+                        <p className="mt-2 text-xs font-semibold text-red-600">
+                          {codeError}
+                        </p>
+                      )}
+                      <button
+                        className="mt-3 w-full rounded-md bg-slate-900 px-4 py-2 text-sm font-semibold text-white"
+                        onClick={handleVerifyCode}
+                      >
+                        Submit
+                      </button>
+                    </div>
                   )}
                 </div>
-              )}
+              ))}
             </div>
-          ))}
-        </div>
+            {selectedSubjectId && topics.length === 0 && (
+              <p className="mt-4 text-sm text-slate-500">
+                No topics available for this subject yet.
+              </p>
+            )}
+          </div>
+        )}
 
-        <div className="mt-8 flex flex-wrap gap-3">
-          <button className="rounded-md border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700">
-            Review later
-          </button>
-          <button
-            className="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white"
-            onClick={handleSubmit}
-          >
-            Submit practice session
-          </button>
-        </div>
+        {subjectIdParam && topicIdParam && (
+          <div className="mt-8">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <h3 className="text-lg font-semibold text-slate-900">Practice Questions</h3>
+              <button
+                className="rounded-md border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700"
+                onClick={() => navigate("/practice")}
+              >
+                Back to topics
+              </button>
+            </div>
+
+            {loadingQuestions && (
+              <p className="mt-4 text-sm text-slate-500">Loading questions...</p>
+            )}
+
+            {!loadingQuestions && (
+              <div className="mt-6 space-y-6">
+                {questions.map((question) => (
+                  <div
+                    key={question.question_id}
+                    className="rounded-2xl border border-slate-200 p-5"
+                  >
+                    <p className="text-sm font-semibold text-slate-900">
+                      {question.question}
+                    </p>
+                    <div className="mt-4 grid gap-3 md:grid-cols-3">
+                      {[question.a, question.b, question.c].map((option, index) => (
+                        <div
+                          key={`${question.question_id}-${index}`}
+                          className="rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-700"
+                        >
+                          {option}
+                        </div>
+                      ))}
+                    </div>
+                    <div className="mt-4 rounded-xl bg-slate-50 p-4 text-sm text-slate-600">
+                      <span className="font-semibold text-green-600">Answer:</span>{" "}
+                      {question.answer}
+                      {question.solution && (
+                        <p className="mt-1 text-gray-500">{question.solution}</p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+                {questions.length === 0 && (
+                  <p className="text-sm text-slate-500">No questions found.</p>
+                )}
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </section>
   );

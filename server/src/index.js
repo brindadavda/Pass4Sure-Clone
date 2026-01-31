@@ -9,6 +9,7 @@ import questionRoutes from "./routes/questions.js";
 import subscriptionRoutes from "./routes/subscriptions.js";
 import analyticsRoutes from "./routes/analytics.js";
 import adminRoutes from "./routes/admin.js";
+import practiceRoutes from "./routes/practice.js";
 
 dotenv.config();
 
@@ -42,6 +43,7 @@ app.use("/api/questions", questionRoutes);
 app.use("/api/subscriptions", subscriptionRoutes);
 app.use("/api/analytics", analyticsRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/practice", practiceRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ message: "Not found" });
