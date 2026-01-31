@@ -165,10 +165,6 @@ const PracticePage = () => {
     navigate(`/practice/${selectedSubjectId}/topics/${selectedTopicId}`);
   };
 
-  const selectedSubject = subjects.find(
-    (subject) => `${subject.subject_id}` === `${selectedSubjectId}`
-  );
-
   return (
     <section className="mx-auto max-w-6xl px-6 py-12">
       <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -207,17 +203,7 @@ const PracticePage = () => {
         {/* Topics Section */}
         {!topicIdParam && (
           <div className="mt-8">
-            <div className="flex flex-col gap-1">
-              <h3 className="text-lg font-semibold text-slate-900">Topics</h3>
-              {selectedSubject && (
-                <p className="text-sm text-slate-600">
-                  Subject:{" "}
-                  <span className="font-semibold text-slate-900">
-                    {selectedSubject.name}
-                  </span>
-                </p>
-              )}
-            </div>
+            <h3 className="text-lg font-semibold text-slate-900">Topics</h3>
 
             <div className="mt-4 grid gap-4 md:grid-cols-2">
               {topics.map((topic) => (
