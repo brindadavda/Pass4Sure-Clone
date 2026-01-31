@@ -26,6 +26,11 @@ const SignupPage = () => {
       await api.post("/api/auth/signup", formData);
       navigate("/login");
     } catch (err) {
+      console.error("Signup failed", {
+        status: err.response?.status,
+        data: err.response?.data,
+        message: err.message
+      });
       const message = err.response?.data?.message || "Unable to create account. Please try again.";
       setError(message);
     } finally {
