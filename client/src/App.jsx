@@ -4,6 +4,8 @@ import Footer from "./components/Footer.jsx";
 import LandingPage from "./pages/LandingPage.jsx";
 import ExamsPage from "./pages/ExamsPage.jsx";
 import PracticePage from "./pages/PracticePage.jsx";
+import PracticeTopicPage from "./pages/PracticeTopicPage.jsx";
+import PracticeTestPage from "./pages/PracticeTestPage.jsx";
 import DashboardPage from "./pages/DashboardPage.jsx";
 import SettingsPage from "./pages/SettingsPage.jsx";
 import CheckoutPage from "./pages/CheckoutPage.jsx";
@@ -20,6 +22,11 @@ const App = () => (
         <Route path="/" element={<LandingPage />} />
         <Route path="/exams" element={<ExamsPage />} />
         <Route path="/practice" element={<PracticePage />} />
+        <Route path="/practice/:subjectId" element={<PracticeTopicPage />} />
+        <Route
+          path="/practice/:subjectId/topics/:topicId"
+          element={<PracticeTestPage />}
+        />
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
