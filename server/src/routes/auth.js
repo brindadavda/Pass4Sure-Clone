@@ -54,12 +54,12 @@ router.post("/login", async (req, res) => {
   const user = result.rows[0];
 
   if (!user) {
-    return res.status(401).json({ message: "Invalid credentials" });
+    return res.status(404).json({ message: "Account not found for this email" });
   }
 
   const valid = await bcrypt.compare(password, user.password_hash);
   if (!valid) {
-    return res.status(401).json({ message: "Invalid credentials" });
+    return res.status(401).json({ message: "Password does not match" });
   }
 
   const token = jwt.sign(
