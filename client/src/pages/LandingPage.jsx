@@ -56,7 +56,7 @@ const LandingPage = () => (
               Explore exams
             </Link>
             <Link
-              to="/practice"
+              to="/exams"
               className="rounded-md border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-700"
             >
               Try free demo
