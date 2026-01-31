@@ -77,6 +77,26 @@ const PracticeTestPage = () => {
     setSubmitted(true);
   };
 
+  const isAnswerCorrect = (question, selectedOption) => {
+    if (!selectedOption) {
+      return false;
+    }
+
+    const normalizedCorrect = `${question.correct_answer}`.trim().toLowerCase();
+    const normalizedSelected = `${selectedOption}`.trim().toLowerCase();
+
+    if (normalizedSelected === normalizedCorrect) {
+      return true;
+    }
+
+    const selectedIndex = question.options
+      .slice(0, 3)
+      .findIndex((option) => option === selectedOption);
+    const selectedLabel = ["a", "b", "c"][selectedIndex];
+
+    return selectedLabel === normalizedCorrect;
+  };
+
   return (
     <section className="mx-auto max-w-6xl px-6 py-12">
       <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -150,11 +170,21 @@ const PracticeTestPage = () => {
                 </div>
 
                 {submitted && (
-                  <div className="mt-4 rounded-xl bg-slate-50 p-4 text-sm">
-                    <span className="font-semibold text-emerald-600">
-                      Correct Answer:
-                    </span>{" "}
-                    {question.correct_answer}
+                  <div className="mt-4 space-y-3 rounded-xl bg-slate-50 p-4 text-sm">
+                    <div>
+                      <span className="font-semibold text-emerald-600">
+                        Correct Answer:
+                      </span>{" "}
+                      {question.correct_answer}
+                    </div>
+                  {answers[question.id] &&
+                      question.explanation &&
+                      !isAnswerCorrect(question, answers[question.id]) && (
+                        <div className="rounded-lg border border-red-100 bg-red-50 p-3 text-red-700">
+                          <span className="font-semibold">Explanation:</span>{" "}
+                          {question.explanation}
+                        </div>
+                      )}
                   </div>
                 )}
               </div>
