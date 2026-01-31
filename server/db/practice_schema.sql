@@ -1,93 +1,87 @@
-create table if not exists subjects (
-  subject_id integer primary key,
-  name text not null,
-  description text
+-- Enable UUID generation
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+------------------------------------------------
+-- SUBJECTS TABLE
+------------------------------------------------
+CREATE TABLE IF NOT EXISTS subjects (
+  subject_id INTEGER PRIMARY KEY,
+  name TEXT NOT NULL,
+  description TEXT
 );
 
-create table if not exists topics (
-  topic_id integer primary key,
-  subject_id integer not null references subjects(subject_id) on delete cascade,
-  name text not null,
-  description text
+------------------------------------------------
+-- TOPICS TABLE
+------------------------------------------------
+CREATE TABLE IF NOT EXISTS topics (
+  topic_id INTEGER PRIMARY KEY,
+  subject_id INTEGER NOT NULL,
+  name TEXT NOT NULL,
+  description TEXT,
+
+  CONSTRAINT fk_subject
+    FOREIGN KEY (subject_id)
+    REFERENCES subjects(subject_id)
+    ON DELETE CASCADE
 );
 
-create table if not exists atomic_topics (
-  atomic_topic_id integer primary key,
-  topic_id integer not null references topics(topic_id) on delete cascade,
-  name text not null,
-  description text
+------------------------------------------------
+-- ATOMIC TOPICS TABLE
+------------------------------------------------
+CREATE TABLE IF NOT EXISTS atomic_topics (
+  atomic_topic_id INTEGER PRIMARY KEY,
+  topic_id INTEGER NOT NULL,
+  name TEXT NOT NULL,
+  description TEXT,
+
+  CONSTRAINT fk_topic
+    FOREIGN KEY (topic_id)
+    REFERENCES topics(topic_id)
+    ON DELETE CASCADE
 );
 
-create table if not exists questions (
-  question_id text primary key,
-  subject_id integer not null references subjects(subject_id) on delete cascade,
-  topic_id integer not null references topics(topic_id) on delete cascade,
-  atomic_topic_id integer references atomic_topics(atomic_topic_id) on delete set null,
-  question text not null,
-  a text not null,
-  b text not null,
-  c text not null,
-  answer text not null,
-  solution text,
-  difficulty text,
-  question_type text,
-  mock text,
-  session text
+------------------------------------------------
+-- QUESTIONS TABLE (Correct Structure)
+------------------------------------------------
+CREATE TABLE IF NOT EXISTS questions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+  subject_id INTEGER,
+  topic_id INTEGER,
+
+  text TEXT NOT NULL,
+  options JSONB NOT NULL,
+  correct_answer TEXT NOT NULL,
+  explanation TEXT,
+  difficulty TEXT,
+
+  is_demo BOOLEAN NOT NULL DEFAULT false,
+
+  CONSTRAINT fk_question_subject
+    FOREIGN KEY (subject_id)
+    REFERENCES subjects(subject_id)
+    ON DELETE CASCADE,
+
+  CONSTRAINT fk_question_topic
+    FOREIGN KEY (topic_id)
+    REFERENCES topics(topic_id)
+    ON DELETE CASCADE
 );
 
-create table if not exists demo_codes (
-  topic_id integer primary key references topics(topic_id) on delete cascade,
-  demo_code text not null
+------------------------------------------------
+-- DEMO CODES TABLE
+------------------------------------------------
+CREATE TABLE IF NOT EXISTS demo_codes (
+  topic_id INTEGER PRIMARY KEY,
+  demo_code TEXT NOT NULL,
+
+  CONSTRAINT fk_demo_topic
+    FOREIGN KEY (topic_id)
+    REFERENCES topics(topic_id)
+    ON DELETE CASCADE
 );
 
-insert into subjects (subject_id, name, description) values
-  (4, 'NCFM Financial Markets', 'Placeholder description for NCFM Financial Markets.'),
-  (5, 'NISM Capital Market', 'Placeholder description for NISM Capital Market.')
-on conflict (subject_id) do nothing;
 
-insert into topics (topic_id, subject_id, name, description) values
-  (20, 4, 'Ethics and Standards', 'Placeholder topic description for Ethics and Standards.'),
-  (21, 4, 'Market Fundamentals', 'Placeholder topic description for Market Fundamentals.'),
-  (30, 5, 'Capital Market Basics', 'Placeholder topic description for Capital Market Basics.')
-on conflict (topic_id) do nothing;
-
-insert into atomic_topics (atomic_topic_id, topic_id, name, description) values
-  (22, 20, 'Code of Ethics', 'Placeholder atomic topic description.')
-on conflict (atomic_topic_id) do nothing;
-
-insert into demo_codes (topic_id, demo_code) values
-  (20, '5565')
-on conflict (topic_id) do update set demo_code = excluded.demo_code;
-
-insert into questions (
-  question_id,
-  subject_id,
-  topic_id,
-  atomic_topic_id,
-  question,
-  a,
-  b,
-  c,
-  answer,
-  solution,
-  difficulty,
-  question_type,
-  mock,
-  session
-) values (
-  'Q1',
-  4,
-  20,
-  22,
-  'Which of the following statements about a code of ethics is most accurate?',
-  'does not need to include standards of conduct.',
-  'must include principles-based standards of conduct.',
-  'must include rules-based standards of conduct.',
-  'B',
-  'The Answer is B. Code of ethics must include principles-based standards of conduct.',
-  'Easy',
-  'Conceptual',
-  'A',
-  '1'
-)
-on conflict (question_id) do nothing;
+-- Adjust the path to your CSV file
+-- \copy <TABLE_NAME> FROM '<CSV FILE PATH>' DELIMITER ',' CSV HEADER;
+-- example: \copy temp_questions FROM '/Pass4Sure-Clone-main/questions.csv' DELIMITER ',' CSV HEADER;

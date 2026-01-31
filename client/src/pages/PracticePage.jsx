@@ -1,18 +1,3 @@
-// const questions = [
-//   {
-//     id: 1,
-//     text: "Which regulator oversees mutual fund distributors in India?",
-//     options: ["SEBI", "RBI", "IRDAI", "NABARD"],
-//     answer: "SEBI"
-//   },
-//   {
-//     id: 2,
-//     text: "What is the minimum subscription for an ELSS fund?",
-//     options: ["₹100", "₹500", "₹1000", "₹5000"],
-//     answer: "₹500"
-//   }
-// ];
-
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import axios from "axios";
@@ -20,21 +5,40 @@ import axios from "axios";
 const PracticePage = () => {
   const [subjects, setSubjects] = useState([]);
   const [topics, setTopics] = useState([]);
+
   const [selectedSubjectId, setSelectedSubjectId] = useState("");
   const [selectedTopicId, setSelectedTopicId] = useState("");
+
   const [demoCode, setDemoCode] = useState("");
   const [enteredCode, setEnteredCode] = useState("");
   const [codeError, setCodeError] = useState("");
+
   const [questions, setQuestions] = useState([]);
   const [loadingQuestions, setLoadingQuestions] = useState(false);
+
+  // ✅ New state for expanding options
+  const [expandedQuestions, setExpandedQuestions] = useState({});
 
   const [searchParams] = useSearchParams();
   const subjectIdParam = searchParams.get("subjectId");
   const topicIdParam = searchParams.get("topicId");
-  const navigate = useNavigate();
 
+  const navigate = useNavigate();
   const API_URL = `${import.meta.env.VITE_API_URL}/api`;
 
+  // -----------------------------
+  // Toggle Options Expand/Collapse
+  // -----------------------------
+  const toggleOptions = (qid) => {
+    setExpandedQuestions((prev) => ({
+      ...prev,
+      [qid]: !prev[qid],
+    }));
+  };
+
+  // -----------------------------
+  // Fetch Subjects
+  // -----------------------------
   useEffect(() => {
     const fetchSubjects = async () => {
       try {
@@ -47,20 +51,23 @@ const PracticePage = () => {
     fetchSubjects();
   }, [API_URL]);
 
+  // -----------------------------
+  // Read Params
+  // -----------------------------
   useEffect(() => {
-    if (subjectIdParam) {
-      setSelectedSubjectId(subjectIdParam);
-    }
-    if (topicIdParam) {
-      setSelectedTopicId(topicIdParam);
-    }
+    if (subjectIdParam) setSelectedSubjectId(subjectIdParam);
+    if (topicIdParam) setSelectedTopicId(topicIdParam);
   }, [subjectIdParam, topicIdParam]);
 
+  // -----------------------------
+  // Fetch Topics
+  // -----------------------------
   useEffect(() => {
     if (!selectedSubjectId) {
       setTopics([]);
       return;
     }
+
     const fetchTopics = async () => {
       try {
         const res = await axios.get(
@@ -71,20 +78,27 @@ const PracticePage = () => {
         console.error("Failed to fetch topics:", err);
       }
     };
+
     fetchTopics();
   }, [API_URL, selectedSubjectId]);
 
+  // -----------------------------
+  // Fetch Questions
+  // -----------------------------
   useEffect(() => {
     if (!subjectIdParam || !topicIdParam) {
       setQuestions([]);
       return;
     }
+
     const fetchQuestions = async () => {
       setLoadingQuestions(true);
+
       try {
         const res = await axios.get(
           `${API_URL}/practice/questions?subjectId=${subjectIdParam}&topicId=${topicIdParam}`
         );
+
         setQuestions(res.data.questions || []);
       } catch (err) {
         console.error("Failed to fetch questions:", err);
@@ -92,11 +106,16 @@ const PracticePage = () => {
         setLoadingQuestions(false);
       }
     };
+
     fetchQuestions();
   }, [API_URL, subjectIdParam, topicIdParam]);
 
+  // -----------------------------
+  // Subject Change Handler
+  // -----------------------------
   const handleSubjectChange = (event) => {
     const subjectId = event.target.value;
+
     setSelectedSubjectId(subjectId);
     setSelectedTopicId("");
     setDemoCode("");
@@ -105,12 +124,18 @@ const PracticePage = () => {
     navigate("/practice");
   };
 
+  // -----------------------------
+  // Free Demo Handler
+  // -----------------------------
   const handleFreeDemo = async (topicId) => {
     setSelectedTopicId(topicId);
     setEnteredCode("");
     setCodeError("");
+
     try {
-      const res = await axios.get(`${API_URL}/practice/topics/${topicId}/demo-code`);
+      const res = await axios.get(
+        `${API_URL}/practice/topics/${topicId}/demo-code`
+      );
       setDemoCode(res.data.demoCode || "");
     } catch (err) {
       console.error("Failed to fetch demo code:", err);
@@ -118,15 +143,20 @@ const PracticePage = () => {
     }
   };
 
+  // -----------------------------
+  // Verify Code Handler
+  // -----------------------------
   const handleVerifyCode = () => {
     if (!demoCode) {
       setCodeError("Demo code unavailable for this topic.");
       return;
     }
+
     if (enteredCode.trim() !== demoCode) {
       setCodeError("Incorrect code. Please try again.");
       return;
     }
+
     setCodeError("");
     navigate(`/practice?subjectId=${selectedSubjectId}&topicId=${selectedTopicId}`);
   };
@@ -134,27 +164,28 @@ const PracticePage = () => {
   return (
     <section className="mx-auto max-w-6xl px-6 py-12">
       <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        {/* Header */}
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <h2 className="text-2xl font-semibold text-slate-900">Practice Mode</h2>
+            <h2 className="text-2xl font-semibold text-slate-900">
+              Practice Mode
+            </h2>
             <p className="text-sm text-slate-600">
               Select a subject, unlock a demo topic, and start practicing.
             </p>
           </div>
-          <div className="rounded-full bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-600">
-            Practice flow
-          </div>
         </div>
 
+        {/* Subject Dropdown */}
         <div className="mt-6">
-          <label className="text-sm font-semibold text-slate-700" htmlFor="subject">
+          <label className="text-sm font-semibold text-slate-700">
             Select Subject
           </label>
+
           <select
-            id="subject"
             value={selectedSubjectId}
             onChange={handleSubjectChange}
-            className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm"
+            className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
           >
             <option value="">Select Subject</option>
             {subjects.map((subject) => (
@@ -165,9 +196,11 @@ const PracticePage = () => {
           </select>
         </div>
 
+        {/* Topics Section */}
         {!subjectIdParam && (
           <div className="mt-8">
             <h3 className="text-lg font-semibold text-slate-900">Topics</h3>
+
             <div className="mt-4 grid gap-4 md:grid-cols-2">
               {topics.map((topic) => (
                 <div
@@ -177,29 +210,37 @@ const PracticePage = () => {
                   <h4 className="text-base font-semibold text-slate-900">
                     {topic.name}
                   </h4>
-                  <p className="mt-2 text-sm text-slate-600">{topic.description}</p>
+
                   <button
                     className="mt-4 rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white"
                     onClick={() => handleFreeDemo(topic.topic_id)}
                   >
                     Free Demo
                   </button>
+
+                  {/* Demo Code Box */}
                   {selectedTopicId === topic.topic_id && (
-                    <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-4">
+                    <div className="mt-4 rounded-xl border bg-slate-50 p-4">
                       <p className="text-xs text-slate-500">
-                        Demo code: <span className="font-semibold">{demoCode || "--"}</span>
+                        Demo code:{" "}
+                        <span className="font-semibold">
+                          {demoCode || "--"}
+                        </span>
                       </p>
+
                       <input
                         value={enteredCode}
-                        onChange={(event) => setEnteredCode(event.target.value)}
+                        onChange={(e) => setEnteredCode(e.target.value)}
                         placeholder="Enter demo code"
-                        className="mt-3 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+                        className="mt-3 w-full rounded-lg border px-3 py-2 text-sm"
                       />
+
                       {codeError && (
                         <p className="mt-2 text-xs font-semibold text-red-600">
                           {codeError}
                         </p>
                       )}
+
                       <button
                         className="mt-3 w-full rounded-md bg-slate-900 px-4 py-2 text-sm font-semibold text-white"
                         onClick={handleVerifyCode}
@@ -211,59 +252,69 @@ const PracticePage = () => {
                 </div>
               ))}
             </div>
-            {selectedSubjectId && topics.length === 0 && (
-              <p className="mt-4 text-sm text-slate-500">
-                No topics available for this subject yet.
-              </p>
-            )}
           </div>
         )}
 
+        {/* Questions Section */}
         {subjectIdParam && topicIdParam && (
           <div className="mt-8">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <h3 className="text-lg font-semibold text-slate-900">Practice Questions</h3>
-              <button
-                className="rounded-md border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700"
-                onClick={() => navigate("/practice")}
-              >
-                Back to topics
-              </button>
-            </div>
+            <h3 className="text-lg font-semibold text-slate-900">
+              Practice Questions
+            </h3>
 
             {loadingQuestions && (
-              <p className="mt-4 text-sm text-slate-500">Loading questions...</p>
+              <p className="mt-4 text-sm text-slate-500">
+                Loading questions...
+              </p>
             )}
 
             {!loadingQuestions && (
               <div className="mt-6 space-y-6">
                 {questions.map((question) => (
                   <div
-                    key={question.question_id}
+                    key={question.id} // ✅ Correct UUID key
                     className="rounded-2xl border border-slate-200 p-5"
                   >
+                    {/* Question */}
                     <p className="text-sm font-semibold text-slate-900">
-                      {question.question}
+                      {question.text}
                     </p>
+
+                    {/* Options */}
                     <div className="mt-4 grid gap-3 md:grid-cols-3">
-                      {[question.a, question.b, question.c].map((option, index) => (
+                      {(expandedQuestions[question.id]
+                        ? question.options // show all
+                        : [question.options[0]] // show first only
+                      ).map((option, index) => (
                         <div
-                          key={`${question.question_id}-${index}`}
-                          className="rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-700"
+                          key={index}
+                          className="rounded-xl border px-4 py-3 text-sm text-slate-700"
                         >
                           {option}
                         </div>
                       ))}
                     </div>
-                    <div className="mt-4 rounded-xl bg-slate-50 p-4 text-sm text-slate-600">
-                      <span className="font-semibold text-green-600">Answer:</span>{" "}
-                      {question.answer}
-                      {question.solution && (
-                        <p className="mt-1 text-gray-500">{question.solution}</p>
-                      )}
+
+                    {/* Toggle Button */}
+                    <button
+                      onClick={() => toggleOptions(question.id)}
+                      className="mt-3 text-sm font-semibold text-blue-600 hover:underline"
+                    >
+                      {expandedQuestions[question.id]
+                        ? "Show Less"
+                        : "Show All Options"}
+                    </button>
+
+                    {/* Answer */}
+                    <div className="mt-4 rounded-xl bg-slate-50 p-4 text-sm">
+                      <span className="font-semibold text-green-600">
+                        Answer:
+                      </span>{" "}
+                      {question.correct_answer}
                     </div>
                   </div>
                 ))}
+
                 {questions.length === 0 && (
                   <p className="text-sm text-slate-500">No questions found.</p>
                 )}

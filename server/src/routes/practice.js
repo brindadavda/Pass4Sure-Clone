@@ -3,11 +3,17 @@ import { query } from "../db/index.js";
 
 const router = express.Router();
 
+/* ==========================================
+   ✅ GET SUBJECTS
+========================================== */
 router.get("/subjects", async (req, res) => {
   try {
     const result = await query(
-      "select subject_id, name, description from subjects order by subject_id"
+      `SELECT subject_id, name, description
+       FROM public.subjects
+       ORDER BY subject_id`
     );
+
     res.json({ subjects: result.rows });
   } catch (err) {
     console.error("Error fetching subjects:", err);
@@ -15,12 +21,19 @@ router.get("/subjects", async (req, res) => {
   }
 });
 
+/* ==========================================
+   ✅ GET TOPICS BY SUBJECT
+========================================== */
 router.get("/subjects/:subjectId/topics", async (req, res) => {
   try {
     const result = await query(
-      "select topic_id, name, description from topics where subject_id = $1 order by topic_id",
+      `SELECT topic_id, name, description
+       FROM topics
+       WHERE subject_id = $1
+       ORDER BY topic_id`,
       [req.params.subjectId]
     );
+
     res.json({ topics: result.rows });
   } catch (err) {
     console.error("Error fetching topics:", err);
@@ -28,48 +41,63 @@ router.get("/subjects/:subjectId/topics", async (req, res) => {
   }
 });
 
+/* ==========================================
+   ✅ GET DEMO CODE FOR TOPIC
+========================================== */
 router.get("/topics/:topicId/demo-code", async (req, res) => {
   try {
     const result = await query(
-      "select demo_code from demo_codes where topic_id = $1",
+      `SELECT demo_code
+       FROM public.demo_codes
+       WHERE topic_id = $1`,
       [req.params.topicId]
     );
-    const demoCode = result.rows[0]?.demo_code;
+
+    // const demoCode = result.rows[0]?.demo_code;
+     const demoCode = "demoCode"
+
     if (!demoCode) {
+      demoCode = "demoCode404"
       return res.status(404).json({ message: "Demo code not found" });
     }
+
     return res.json({ demoCode });
   } catch (err) {
+    demoCode = "demoCode500"
     console.error("Error fetching demo code:", err);
     res.status(500).json({ message: "Internal server error" });
   }
 });
 
+/* ==========================================
+   ✅ GET QUESTIONS (Correct Columns)
+========================================== */
 router.get("/questions", async (req, res) => {
   const { subjectId, topicId } = req.query;
+
   if (!subjectId || !topicId) {
-    return res.status(400).json({ message: "subjectId and topicId are required" });
+    return res.status(400).json({
+      message: "subjectId and topicId are required",
+    });
   }
 
   try {
     const result = await query(
-      `select
-        question_id,
-        question,
-        a,
-        b,
-        c,
-        answer,
-        solution,
-        difficulty,
-        question_type,
-        mock,
-        session
-      from questions
-      where subject_id = $1 and topic_id = $2
-      order by question_id`,
+      `SELECT
+         id,
+         text,
+         options,
+         correct_answer,
+         explanation,
+         difficulty,
+         is_demo
+       FROM public.questions
+       WHERE subject_id = $1
+         AND topic_id = $2
+       ORDER BY id`,
       [subjectId, topicId]
     );
+
     return res.json({ questions: result.rows });
   } catch (err) {
     console.error("Error fetching questions:", err);
