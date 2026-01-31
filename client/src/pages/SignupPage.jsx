@@ -1,11 +1,14 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext.jsx";
+import api from "../lib/api.js";
 
-const LoginPage = () => {
-  const { login } = useAuth();
+const SignupPage = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: ""
+  });
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -20,10 +23,10 @@ const LoginPage = () => {
     setIsSubmitting(true);
 
     try {
-      await login(formData.email, formData.password);
-      navigate("/practice");
+      await api.post("/api/auth/signup", formData);
+      navigate("/login");
     } catch (err) {
-      const message = err.response?.data?.message || "Unable to log in. Please try again.";
+      const message = err.response?.data?.message || "Unable to create account. Please try again.";
       setError(message);
     } finally {
       setIsSubmitting(false);
@@ -33,15 +36,28 @@ const LoginPage = () => {
   return (
     <section className="mx-auto max-w-lg px-6 py-12">
       <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-        <h2 className="text-2xl font-semibold text-slate-900">Log in</h2>
-        <p className="mt-2 text-sm text-slate-600">Access your dashboard and subscriptions.</p>
+        <h2 className="text-2xl font-semibold text-slate-900">Create account</h2>
+        <p className="mt-2 text-sm text-slate-600">Start with free demos and upgrade anytime.</p>
         <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
           <div>
-            <label className="text-sm font-medium text-slate-700" htmlFor="email">
+            <label className="text-sm font-medium text-slate-700" htmlFor="name">
+              Full name
+            </label>
+            <input
+              id="name"
+              name="name"
+              required
+              value={formData.name}
+              onChange={handleChange}
+              className="mt-2 w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+            />
+          </div>
+          <div>
+            <label className="text-sm font-medium text-slate-700" htmlFor="signup-email">
               Email
             </label>
             <input
-              id="email"
+              id="signup-email"
               name="email"
               type="email"
               required
@@ -51,11 +67,11 @@ const LoginPage = () => {
             />
           </div>
           <div>
-            <label className="text-sm font-medium text-slate-700" htmlFor="password">
+            <label className="text-sm font-medium text-slate-700" htmlFor="signup-password">
               Password
             </label>
             <input
-              id="password"
+              id="signup-password"
               name="password"
               type="password"
               required
@@ -74,13 +90,13 @@ const LoginPage = () => {
             type="submit"
             disabled={isSubmitting}
           >
-            {isSubmitting ? "Signing in..." : "Continue"}
+            {isSubmitting ? "Creating account..." : "Create account"}
           </button>
         </form>
         <div className="mt-4 text-sm text-slate-500">
-          Don&apos;t have an account?{" "}
-          <Link to="/signup" className="text-blue-600">
-            Sign up
+          Already registered?{" "}
+          <Link to="/login" className="text-blue-600">
+            Log in
           </Link>
         </div>
       </div>
@@ -88,4 +104,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default SignupPage;

@@ -9,9 +9,9 @@ import DashboardPage from "./pages/DashboardPage.jsx";
 import SettingsPage from "./pages/SettingsPage.jsx";
 import CheckoutPage from "./pages/CheckoutPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
-import RegisterPage from "./pages/RegisterPage.jsx";
+import SignupPage from "./pages/SignupPage.jsx";
 import AdminPage from "./pages/AdminPage.jsx";
-
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 const App = () => (
   <div className="flex min-h-screen flex-col">
@@ -20,16 +20,28 @@ const App = () => (
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/exams" element={<ExamsPage />} />
-        <Route path="/practice" element={<PracticePage />} />
+        <Route
+          path="/practice"
+          element={
+            <ProtectedRoute>
+              <PracticePage />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/practice/:subjectId/topics/:topicId"
-          element={<PracticeTestPage />}
+          element={
+            <ProtectedRoute>
+              <PracticeTestPage />
+            </ProtectedRoute>
+          }
         />
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/signup" element={<SignupPage />} />
+        <Route path="/register" element={<SignupPage />} />
         <Route path="/admin" element={<AdminPage />} />
       </Routes>
     </main>

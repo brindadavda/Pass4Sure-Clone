@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { z } from "zod";
 import { query } from "../db/index.js";
+import { authenticate } from "../middleware/auth.js";
 
 const router = express.Router();
 
@@ -36,7 +37,10 @@ router.post("/signup", async (req, res) => {
     [name, email, passwordHash, "user"]
   );
 
-  return res.status(201).json({ user: result.rows[0] });
+  return res.status(201).json({
+    message: "Account created successfully",
+    user: result.rows[0]
+  });
 });
 
 router.post("/login", async (req, res) => {
@@ -68,6 +72,18 @@ router.post("/login", async (req, res) => {
     token,
     user: { id: user.id, name: user.name, email: user.email, role: user.role }
   });
+});
+
+router.get("/me", authenticate, async (req, res) => {
+  const result = await query(
+    "select id, name, email, role, created_at from users where id = $1",
+    [req.user.sub]
+  );
+  const user = result.rows[0];
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
+  return res.json({ user });
 });
 
 router.post("/forgot-password", async (req, res) => {
