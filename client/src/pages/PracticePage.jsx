@@ -1,18 +1,3 @@
-// const questions = [
-//   {
-//     id: 1,
-//     text: "Which regulator oversees mutual fund distributors in India?",
-//     options: ["SEBI", "RBI", "IRDAI", "NABARD"],
-//     answer: "SEBI"
-//   },
-//   {
-//     id: 2,
-//     text: "What is the minimum subscription for an ELSS fund?",
-//     options: ["₹100", "₹500", "₹1000", "₹5000"],
-//     answer: "₹500"
-//   }
-// ];
-
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import axios from "axios";
@@ -24,6 +9,19 @@ const PracticePage = () => {
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  // -----------------------------
+  // Toggle Options Expand/Collapse
+  // -----------------------------
+  const toggleOptions = (qid) => {
+    setExpandedQuestions((prev) => ({
+      ...prev,
+      [qid]: !prev[qid],
+    }));
+  };
+
+  // -----------------------------
+  // Fetch Subjects
+  // -----------------------------
   useEffect(() => {
     if (!topicId) return;
 
@@ -37,9 +35,10 @@ const PracticePage = () => {
       } catch (err) {
         console.error("Failed to fetch questions:", err);
       } finally {
-        setLoading(false);
+        setLoadingQuestions(false);
       }
     };
+
     fetchQuestions();
   }, [topicId]);
 
