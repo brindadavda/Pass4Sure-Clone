@@ -31,7 +31,13 @@ const SignupPage = () => {
         data: err.response?.data,
         message: err.message
       });
-      const message = err.response?.data?.message || "Unable to create account. Please try again.";
+      const responseData = err.response?.data;
+      const fieldErrors = responseData?.errors?.fieldErrors;
+      const errorList = fieldErrors ? Object.values(fieldErrors).flat() : [];
+      const message =
+        responseData?.message ||
+        errorList.join(" ") ||
+        "Unable to create account. Please try again.";
       setError(message);
     } finally {
       setIsSubmitting(false);
