@@ -1,61 +1,168 @@
+import { useEffect, useMemo, useState } from "react";
+import axios from "axios";
 import StatCard from "../components/StatCard.jsx";
 
-const DashboardPage = () => (
-  <section className="mx-auto max-w-6xl px-6 py-12">
-    <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
-      <div className="flex-1 space-y-6">
-        <div>
-          <h2 className="text-3xl font-semibold text-slate-900">Welcome back, Ananya</h2>
-          <p className="mt-2 text-sm text-slate-600">
-            Track your performance and upcoming subscription expiries.
-          </p>
-        </div>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <StatCard label="Overall accuracy" value="82%" meta="+4% from last week" />
-          <StatCard label="Mock tests completed" value="14" meta="2 scheduled this week" />
-          <StatCard label="Average speed" value="38 sec" meta="Per question" />
-          <StatCard label="Weak topics" value="5" meta="Derivatives, Taxation" />
-        </div>
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h3 className="text-lg font-semibold text-slate-900">Recent practice sessions</h3>
-          <div className="mt-4 space-y-3 text-sm text-slate-600">
+const DashboardPage = () => {
+  const [exams, setExams] = useState([]);
+  const [loadingExams, setLoadingExams] = useState(false);
+
+  const API_URL = `${import.meta.env.VITE_API_URL}/api`;
+
+  useEffect(() => {
+    const fetchExams = async () => {
+      setLoadingExams(true);
+      try {
+        const res = await axios.get(`${API_URL}/exams`);
+        setExams(res.data.exams || []);
+      } catch (err) {
+        console.error("Failed to fetch exams:", err);
+      } finally {
+        setLoadingExams(false);
+      }
+    };
+
+    fetchExams();
+  }, [API_URL]);
+
+  const stats = useMemo(() => {
+    if (!exams.length) {
+      return {
+        totalExams: 0,
+        categories: 0,
+        averagePrice: 0,
+        averageValidity: 0,
+      };
+    }
+
+    const uniqueCategories = new Set(exams.map((exam) => exam.category).filter(Boolean));
+    const totalPrice = exams.reduce((sum, exam) => sum + Number(exam.price || 0), 0);
+    const totalValidity = exams.reduce(
+      (sum, exam) => sum + Number(exam.validity_days || 0),
+      0
+    );
+
+    return {
+      totalExams: exams.length,
+      categories: uniqueCategories.size,
+      averagePrice: totalPrice / exams.length,
+      averageValidity: totalValidity / exams.length,
+    };
+  }, [exams]);
+
+  const formatCurrency = (value) =>
+    value
+      ? new Intl.NumberFormat("en-IN", {
+          style: "currency",
+          currency: "INR",
+          maximumFractionDigits: 0,
+        }).format(value)
+      : "₹0";
+
+  return (
+    <section className="mx-auto max-w-6xl px-6 py-12">
+      <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
+        <div className="flex-1 space-y-6">
+          <div>
+            <h2 className="text-3xl font-semibold text-slate-900">
+              Welcome back, Ananya
+            </h2>
+            <p className="mt-2 text-sm text-slate-600">
+              Track your available exams and subscription highlights.
+            </p>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <StatCard
+              label="Available exams"
+              value={stats.totalExams}
+              meta="Live catalog"
+            />
+            <StatCard
+              label="Exam categories"
+              value={stats.categories}
+              meta="Across disciplines"
+            />
+            <StatCard
+              label="Average price"
+              value={formatCurrency(Math.round(stats.averagePrice))}
+              meta="Per exam"
+            />
+            <StatCard
+              label="Average validity"
+              value={`${Math.round(stats.averageValidity)} days`}
+              meta="Per subscription"
+            />
+          </div>
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <div className="flex items-center justify-between">
-              <span>NISM Series V-A Mock Test</span>
-              <span className="font-semibold text-green-600">82%</span>
+              <h3 className="text-lg font-semibold text-slate-900">Exam catalog</h3>
+              {loadingExams && (
+                <span className="text-xs font-semibold text-slate-400">
+                  Loading...
+                </span>
+              )}
             </div>
-            <div className="flex items-center justify-between">
-              <span>NCFM Capital Markets Practice</span>
-              <span className="font-semibold text-yellow-600">74%</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span>BSE Derivatives Revision</span>
-              <span className="font-semibold text-red-500">63%</span>
+            <div className="mt-4 space-y-4 text-sm text-slate-600">
+              {exams.slice(0, 4).map((exam) => (
+                <div
+                  key={exam.id}
+                  className="rounded-xl border border-slate-100 bg-slate-50 p-4"
+                >
+                  <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                    <span className="font-semibold text-slate-800">
+                      {exam.title}
+                    </span>
+                    <span className="text-xs font-semibold text-blue-600">
+                      {formatCurrency(exam.price)}
+                    </span>
+                  </div>
+                  <p className="mt-2 text-xs text-slate-500">{exam.description}</p>
+                  <div className="mt-3 flex flex-wrap gap-2 text-xs text-slate-500">
+                    {exam.category && (
+                      <span className="rounded-full bg-white px-2 py-1">
+                        {exam.category}
+                      </span>
+                    )}
+                    {exam.validity_days && (
+                      <span className="rounded-full bg-white px-2 py-1">
+                        Valid {exam.validity_days} days
+                      </span>
+                    )}
+                  </div>
+                </div>
+              ))}
+              {!loadingExams && exams.length === 0 && (
+                <p className="text-sm text-slate-500">
+                  No exams available yet.
+                </p>
+              )}
             </div>
           </div>
         </div>
+        <aside className="w-full max-w-sm space-y-4">
+          <div className="rounded-2xl border border-blue-100 bg-blue-50 p-6">
+            <h3 className="text-lg font-semibold text-blue-900">
+              Subscription alerts
+            </h3>
+            <p className="mt-2 text-sm text-blue-800">
+              Keep an eye on renewals and expiring access to stay exam-ready.
+            </p>
+            <button className="mt-4 rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white">
+              Review plans
+            </button>
+          </div>
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h3 className="text-lg font-semibold text-slate-900">AI study plan</h3>
+            <p className="mt-2 text-sm text-slate-600">
+              Generate a personalized plan based on your exam catalog.
+            </p>
+            <button className="mt-4 rounded-md border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700">
+              Generate plan
+            </button>
+          </div>
+        </aside>
       </div>
-      <aside className="w-full max-w-sm space-y-4">
-        <div className="rounded-2xl border border-blue-100 bg-blue-50 p-6">
-          <h3 className="text-lg font-semibold text-blue-900">Subscription alerts</h3>
-          <p className="mt-2 text-sm text-blue-800">
-            NISM Series V-A expires in 12 days. Renew now to keep access.
-          </p>
-          <button className="mt-4 rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white">
-            Renew plan
-          </button>
-        </div>
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h3 className="text-lg font-semibold text-slate-900">AI study plan</h3>
-          <p className="mt-2 text-sm text-slate-600">
-            Get a personalized weekly plan based on your accuracy trends.
-          </p>
-          <button className="mt-4 rounded-md border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700">
-            Generate plan
-          </button>
-        </div>
-      </aside>
-    </div>
-  </section>
-);
+    </section>
+  );
+};
 
 export default DashboardPage;
