@@ -23,7 +23,12 @@ const LoginPage = () => {
       await login(formData.email, formData.password);
       navigate("/practice");
     } catch (err) {
-      const message = err.response?.data?.message || "Unable to log in. Please try again.";
+      const responseData = err.response?.data;
+      const status = err.response?.status;
+      const message =
+        status === 404
+          ? "Your account is not created yet. Please sign up first."
+          : responseData?.message || "Unable to log in. Please try again.";
       setError(message);
     } finally {
       setIsSubmitting(false);

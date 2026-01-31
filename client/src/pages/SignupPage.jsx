@@ -11,6 +11,7 @@ const SignupPage = () => {
   });
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -20,11 +21,12 @@ const SignupPage = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError("");
+    setSuccessMessage("");
     setIsSubmitting(true);
 
     try {
       await api.post("/api/auth/signup", formData);
-      navigate("/login");
+      setSuccessMessage("Your account was created successfully. Please log in to continue.");
     } catch (err) {
       console.error("Signup failed", {
         status: err.response?.status,
@@ -49,6 +51,14 @@ const SignupPage = () => {
       <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
         <h2 className="text-2xl font-semibold text-slate-900">Create account</h2>
         <p className="mt-2 text-sm text-slate-600">Start with free demos and upgrade anytime.</p>
+        {successMessage ? (
+          <div className="mt-4 rounded-md border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-700">
+            {successMessage}{" "}
+            <Link to="/login" className="font-semibold text-green-700 underline">
+              Go to login
+            </Link>
+          </div>
+        ) : null}
         <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
           <div>
             <label className="text-sm font-medium text-slate-700" htmlFor="name">
