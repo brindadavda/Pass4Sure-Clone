@@ -36,8 +36,8 @@ const testimonials = [
 const LandingPage = () => (
   <div>
     <section className="bg-gradient-to-br from-blue-50 via-white to-slate-50">
-      <div className="mx-auto flex max-w-6xl flex-col gap-12 px-6 py-16 lg:flex-row lg:items-center">
-        <div className="flex-1">
+      <div className="mx-auto flex max-w-6xl flex-col gap-12 px-6 py-16">
+        <div className="space-y-8">
           <p className="text-sm font-semibold uppercase tracking-wide text-blue-600">
             Pass4Sure Certification Hub
           </p>
@@ -67,8 +67,6 @@ const LandingPage = () => (
             <span>Instant access after purchase</span>
             <span>Validity-based subscriptions</span>
           </div>
-        </div>
-        <div className="flex-1">
           <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-lg">
             <div className="flex items-center justify-between">
               <div>

@@ -121,7 +121,11 @@ const PracticePage = () => {
     setDemoCode("");
     setEnteredCode("");
     setCodeError("");
-    navigate("/practice");
+    if (subjectId) {
+      navigate(`/practice?subjectId=${subjectId}`);
+    } else {
+      navigate("/practice");
+    }
   };
 
   // -----------------------------
@@ -158,7 +162,7 @@ const PracticePage = () => {
     }
 
     setCodeError("");
-    navigate(`/practice?subjectId=${selectedSubjectId}&topicId=${selectedTopicId}`);
+    navigate(`/practice/${selectedSubjectId}/topics/${selectedTopicId}`);
   };
 
   return (
@@ -197,7 +201,7 @@ const PracticePage = () => {
         </div>
 
         {/* Topics Section */}
-        {!subjectIdParam && (
+        {!topicIdParam && (
           <div className="mt-8">
             <h3 className="text-lg font-semibold text-slate-900">Topics</h3>
 
@@ -210,6 +214,9 @@ const PracticePage = () => {
                   <h4 className="text-base font-semibold text-slate-900">
                     {topic.name}
                   </h4>
+                  <p className="mt-2 text-sm text-slate-600">
+                    {topic.description}
+                  </p>
 
                   <button
                     className="mt-4 rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white"
