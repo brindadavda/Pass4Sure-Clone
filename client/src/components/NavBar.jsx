@@ -38,7 +38,7 @@ const NavBar = () => {
             Admin
           </NavLink>
         </nav>
-        <div className="hidden items-center gap-3 md:flex">
+        <div className="flex items-center gap-3">
           <NavLink
             to="/login"
             className="text-sm font-medium text-slate-600 hover:text-blue-600"
@@ -49,7 +49,7 @@ const NavBar = () => {
             to="/register"
             className="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white"
           >
-            Get Started
+            Sign up
           </NavLink>
         </div>
         <button
@@ -100,22 +100,6 @@ const NavBar = () => {
             <NavLink to="/admin" className={linkClass} onClick={() => setIsMenuOpen(false)}>
               Admin
             </NavLink>
-            <div className="mt-2 flex flex-col gap-2">
-              <NavLink
-                to="/login"
-                className="rounded-md border border-slate-200 px-3 py-2 text-sm font-medium text-slate-600"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Log in
-              </NavLink>
-              <NavLink
-                to="/register"
-                className="rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Get Started
-              </NavLink>
-            </div>
           </nav>
         </div>
       )}
