@@ -112,9 +112,14 @@ const PracticeTestPage = () => {
                   {question.options.slice(0, 3).map((option, optionIndex) => {
                     const optionLabel = ["a", "b", "c"][optionIndex];
                     const isSelected = answers[question.id] === option;
-                    const isCorrect = submitted && option === question.correct_answer;
+                    const normalizedCorrect = `${question.correct_answer}`.trim().toLowerCase();
+                    const normalizedOption = `${option}`.trim().toLowerCase();
+                    const isCorrect =
+                      submitted &&
+                      (normalizedOption === normalizedCorrect ||
+                        optionLabel === normalizedCorrect);
                     const isIncorrect =
-                      submitted && isSelected && option !== question.correct_answer;
+                      submitted && isSelected && !isCorrect;
 
                     return (
                       <label
