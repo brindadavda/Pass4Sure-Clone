@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { z } from "zod";
 import { query } from "../db/index.js";
+import { authenticate } from "../middleware/auth.js";
 
 const router = express.Router();
 
@@ -24,19 +25,32 @@ router.post("/signup", async (req, res) => {
   }
 
   const { name, email, password } = parsed.data;
-  const passwordHash = await bcrypt.hash(password, 10);
 
-  const existing = await query("select id from users where email = $1", [email]);
-  if (existing.rowCount > 0) {
-    return res.status(409).json({ message: "Email already registered" });
+  try {
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    const existing = await query("select id from users where email = $1", [email]);
+    if (existing.rowCount > 0) {
+      return res.status(409).json({ message: "Email already registered" });
+    }
+
+    const result = await query(
+      "insert into users (name, email, password_hash, role) values ($1, $2, $3, $4) returning id, name, email, role",
+      [name, email, passwordHash, "user"]
+    );
+
+    return res.status(201).json({
+      message: "Account created successfully",
+      user: result.rows[0]
+    });
+  } catch (error) {
+    console.error("Signup failed", {
+      email,
+      message: error.message,
+      code: error.code
+    });
+    return res.status(500).json({ message: "Unable to create account. Please try again." });
   }
-
-  const result = await query(
-    "insert into users (name, email, password_hash, role) values ($1, $2, $3, $4) returning id, name, email, role",
-    [name, email, passwordHash, "user"]
-  );
-
-  return res.status(201).json({ user: result.rows[0] });
 });
 
 router.post("/login", async (req, res) => {
@@ -50,12 +64,12 @@ router.post("/login", async (req, res) => {
   const user = result.rows[0];
 
   if (!user) {
-    return res.status(401).json({ message: "Invalid credentials" });
+    return res.status(404).json({ message: "Account not found for this email" });
   }
 
   const valid = await bcrypt.compare(password, user.password_hash);
   if (!valid) {
-    return res.status(401).json({ message: "Invalid credentials" });
+    return res.status(401).json({ message: "Password does not match" });
   }
 
   const token = jwt.sign(
@@ -68,6 +82,18 @@ router.post("/login", async (req, res) => {
     token,
     user: { id: user.id, name: user.name, email: user.email, role: user.role }
   });
+});
+
+router.get("/me", authenticate, async (req, res) => {
+  const result = await query(
+    "select id, name, email, role, created_at from users where id = $1",
+    [req.user.sub]
+  );
+  const user = result.rows[0];
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
+  return res.json({ user });
 });
 
 router.post("/forgot-password", async (req, res) => {
