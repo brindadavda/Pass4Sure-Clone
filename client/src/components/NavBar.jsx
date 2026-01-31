@@ -38,7 +38,7 @@ const NavBar = () => {
             Admin
           </NavLink>
         </nav>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <NavLink
             to="/login"
             className="text-sm font-medium text-slate-600 hover:text-blue-600"
@@ -51,28 +51,28 @@ const NavBar = () => {
           >
             Sign up
           </NavLink>
-        </div>
-        <button
-          type="button"
-          className="flex items-center justify-center rounded-md border border-slate-200 p-2 text-slate-600 md:hidden"
-          aria-label="Toggle navigation menu"
-          aria-expanded={isMenuOpen}
-          onClick={() => setIsMenuOpen((open) => !open)}
-        >
-          <svg
-            className="h-5 w-5"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+          <button
+            type="button"
+            className="flex items-center justify-center rounded-md border border-slate-200 p-2 text-slate-600 md:hidden"
+            aria-label="Toggle navigation menu"
+            aria-expanded={isMenuOpen}
+            onClick={() => setIsMenuOpen((open) => !open)}
           >
-            <line x1="3" y1="6" x2="21" y2="6" />
-            <line x1="3" y1="12" x2="21" y2="12" />
-            <line x1="3" y1="18" x2="21" y2="18" />
-          </svg>
-        </button>
+            <svg
+              className="h-5 w-5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
+          </button>
+        </div>
       </div>
       {isMenuOpen && (
         <div className="border-t border-slate-200 bg-white md:hidden">
