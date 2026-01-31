@@ -94,48 +94,18 @@ const DashboardPage = () => {
           </div>
           <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-slate-900">Exam catalog</h3>
+              <h3 className="text-lg font-semibold text-slate-900">
+                Exam highlights
+              </h3>
               {loadingExams && (
                 <span className="text-xs font-semibold text-slate-400">
                   Loading...
                 </span>
               )}
             </div>
-            <div className="mt-4 space-y-4 text-sm text-slate-600">
-              {exams.slice(0, 4).map((exam) => (
-                <div
-                  key={exam.id}
-                  className="rounded-xl border border-slate-100 bg-slate-50 p-4"
-                >
-                  <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-                    <span className="font-semibold text-slate-800">
-                      {exam.title}
-                    </span>
-                    <span className="text-xs font-semibold text-blue-600">
-                      {formatCurrency(exam.price)}
-                    </span>
-                  </div>
-                  <p className="mt-2 text-xs text-slate-500">{exam.description}</p>
-                  <div className="mt-3 flex flex-wrap gap-2 text-xs text-slate-500">
-                    {exam.category && (
-                      <span className="rounded-full bg-white px-2 py-1">
-                        {exam.category}
-                      </span>
-                    )}
-                    {exam.validity_days && (
-                      <span className="rounded-full bg-white px-2 py-1">
-                        Valid {exam.validity_days} days
-                      </span>
-                    )}
-                  </div>
-                </div>
-              ))}
-              {!loadingExams && exams.length === 0 && (
-                <p className="text-sm text-slate-500">
-                  No exams available yet.
-                </p>
-              )}
-            </div>
+            <p className="mt-3 text-sm text-slate-600">
+              Visit the Exams tab to browse the full catalog and purchase plans.
+            </p>
           </div>
         </div>
         <aside className="w-full max-w-sm space-y-4">
