@@ -32,8 +32,6 @@ import ExamCard from "../components/ExamCard.jsx";
 const ExamsPage = () => {
   const [exams, setExams] = useState([]);
 
-  console.log("URL: = "+import.meta.env.VITE_API_URL + "/api/exams");
-
   useEffect(() => {
     const fetchExams = async () => {
       try {
@@ -55,7 +53,7 @@ const ExamsPage = () => {
         <div>
           <h2 className="text-3xl font-semibold text-slate-900">Certification exams</h2>
           <p className="mt-2 text-sm text-slate-600">
-            Filter by category, compare prices, and unlock full practice banks.
+            Choose an exam to explore topics and start a free demo.
           </p>
         </div>
         <div className="flex gap-3">

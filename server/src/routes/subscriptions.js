@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.get("/me", authenticate, async (req, res) => {
   const result = await query(
-    "select s.id, e.title, s.expires_at from subscriptions s join exams e on e.id = s.exam_id where s.user_id = $1",
+    "select s.id, t.title, s.expires_at from subscriptions s join topics t on t.id = s.topic_id where s.user_id = $1",
     [req.user.sub]
   );
   res.json({ subscriptions: result.rows });

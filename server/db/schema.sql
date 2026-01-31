@@ -9,29 +9,34 @@ create table if not exists users (
 
 create table if not exists exams (
   id uuid primary key default gen_random_uuid(),
-  title text not null,
-  category text not null,
-  price numeric(10,2) not null,
-  validity_days integer not null,
+  name text not null,
   description text,
   created_at timestamptz not null default now()
 );
 
-create table if not exists questions (
+create table if not exists topics (
   id uuid primary key default gen_random_uuid(),
   exam_id uuid references exams(id) on delete cascade,
-  text text not null,
+  title text not null,
+  short_description text,
+  full_description text,
+  price numeric(10,2) not null default 0
+);
+
+create table if not exists questions (
+  id uuid primary key default gen_random_uuid(),
+  topic_id uuid references topics(id) on delete cascade,
+  question_text text not null,
   options jsonb not null,
   correct_answer text not null,
   explanation text,
-  difficulty text,
-  is_demo boolean not null default false
+  is_demo_question boolean not null default false
 );
 
 create table if not exists subscriptions (
   id uuid primary key default gen_random_uuid(),
   user_id uuid references users(id) on delete cascade,
-  exam_id uuid references exams(id) on delete cascade,
+  topic_id uuid references topics(id) on delete cascade,
   expires_at timestamptz not null
 );
 

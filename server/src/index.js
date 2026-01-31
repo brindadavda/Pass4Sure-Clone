@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import authRoutes from "./routes/auth.js";
 import examRoutes from "./routes/exams.js";
 import questionRoutes from "./routes/questions.js";
+import topicRoutes from "./routes/topics.js";
 import subscriptionRoutes from "./routes/subscriptions.js";
 import analyticsRoutes from "./routes/analytics.js";
 import adminRoutes from "./routes/admin.js";
@@ -39,6 +40,7 @@ app.get("/health", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/exams", examRoutes);
 app.use("/api/questions", questionRoutes);
+app.use("/api/topics", topicRoutes);
 app.use("/api/subscriptions", subscriptionRoutes);
 app.use("/api/analytics", analyticsRoutes);
 app.use("/api/admin", adminRoutes);
