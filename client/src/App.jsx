@@ -23,17 +23,17 @@ const App = () => (
         <Route
           path="/practice"
           element={
-            <ProtectedRoute>
+            // <ProtectedRoute>
               <PracticePage />
-            </ProtectedRoute>
+            // </ProtectedRoute>
           }
         />
         <Route
           path="/practice/:subjectId/topics/:topicId"
           element={
-            <ProtectedRoute>
+            // <ProtectedRoute>
               <PracticeTestPage />
-            </ProtectedRoute>
+            // </ProtectedRoute>
           }
         />
         <Route path="/dashboard" element={<DashboardPage />} />
