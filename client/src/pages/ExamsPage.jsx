@@ -31,8 +31,8 @@ import ExamCard from "../components/ExamCard.jsx";
 
 const ExamsPage = () => {
   const [exams, setExams] = useState([]);
-
-  console.log("URL: = "+import.meta.env.VITE_API_URL + "/api/exams");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All categories");
 
   useEffect(() => {
     const fetchExams = async () => {
@@ -48,6 +48,24 @@ const ExamsPage = () => {
     fetchExams();
   }, []);
 
+  const categories = [
+    "All categories",
+    ...Array.from(new Set(exams.map((exam) => exam.category).filter(Boolean))),
+  ];
+
+  const filteredExams = exams.filter((exam) => {
+    const matchesCategory =
+      selectedCategory === "All categories" ||
+      exam.category === selectedCategory;
+    const term = searchTerm.trim().toLowerCase();
+    const matchesSearch =
+      term.length === 0 ||
+      `${exam.title}`.toLowerCase().includes(term) ||
+      `${exam.description}`.toLowerCase().includes(term);
+
+    return matchesCategory && matchesSearch;
+  });
+
   // ✅ You must return the JSX
   return (
     <section className="mx-auto max-w-6xl px-6 py-12">
@@ -58,26 +76,35 @@ const ExamsPage = () => {
             Filter by category, compare prices, and unlock full practice banks.
           </p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <input
             type="text"
             placeholder="Search exams"
-            className="w-56 rounded-md border border-slate-300 px-3 py-2 text-sm"
+            value={searchTerm}
+            onChange={(event) => setSearchTerm(event.target.value)}
+            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm sm:w-56"
           />
-          <select className="rounded-md border border-slate-300 px-3 py-2 text-sm">
-            <option>All categories</option>
-            <option>NISM</option>
-            <option>NCFM</option>
-            <option>BSE</option>
-            <option>IT</option>
+          <select
+            value={selectedCategory}
+            onChange={(event) => setSelectedCategory(event.target.value)}
+            className="rounded-md border border-slate-300 px-3 py-2 text-sm"
+          >
+            {categories.map((category) => (
+              <option key={category}>{category}</option>
+            ))}
           </select>
         </div>
       </div>
 
       <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {exams?.map((exam) => (
+        {filteredExams.map((exam) => (
           <ExamCard key={exam.id} exam={exam} />
         ))}
+        {filteredExams.length === 0 && (
+          <p className="text-sm text-slate-500">
+            No exams match your search.
+          </p>
+        )}
       </div>
     </section>
   );
