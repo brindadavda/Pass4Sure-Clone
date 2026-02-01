@@ -76,7 +76,7 @@ router.post("/message", async (req, res) => {
     -------------------------------- */
     const result = await query(
       `
-      INSERT INTO chatbot_logs (user_id, session_id, user_message, bot_reply)
+      INSERT INTO chatbot_logs (user_id, session_id, message, reply)
       VALUES ($1, $2, $3, $4)
       RETURNING *
       `,
