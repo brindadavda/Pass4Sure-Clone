@@ -225,4 +225,77 @@ router.get("/activity", async (req, res) => {
   res.json({ activity: result.rows });
 });
 
+const ensureChatbotLogsTable = async () => {
+  await query(
+    `CREATE TABLE IF NOT EXISTS chatbot_logs (
+      id uuid primary key default gen_random_uuid(),
+      user_id uuid references users(id) on delete set null,
+      session_id text,
+      user_message text not null,
+      bot_reply text not null,
+      created_at timestamp default now()
+    )`
+  );
+  await query(`ALTER TABLE chatbot_logs ADD COLUMN IF NOT EXISTS message text`);
+  await query(`ALTER TABLE chatbot_logs ADD COLUMN IF NOT EXISTS reply text`);
+  await query(`ALTER TABLE chatbot_logs ADD COLUMN IF NOT EXISTS session_id text`);
+  await query(`ALTER TABLE chatbot_logs ADD COLUMN IF NOT EXISTS user_message text`);
+  await query(`ALTER TABLE chatbot_logs ADD COLUMN IF NOT EXISTS bot_reply text`);
+};
+
+router.get("/chatbot-logs", async (req, res) => {
+  const page = Math.max(parseInt(req.query.page || "1", 10), 1);
+  const pageSize = Math.min(Math.max(parseInt(req.query.pageSize || "20", 10), 1), 100);
+  const search = req.query.search?.trim();
+  const offset = (page - 1) * pageSize;
+  const params = [];
+
+  let whereClause = "";
+  if (search) {
+    params.push(`%${search}%`);
+    whereClause = `where (
+      coalesce(cl.user_message, cl.message) ilike $1
+      or coalesce(cl.bot_reply, cl.reply) ilike $1
+      or cl.session_id ilike $1
+      or u.email ilike $1
+      or u.name ilike $1
+    )`;
+  }
+
+  await ensureChatbotLogsTable();
+
+  const countResult = await query(
+    `select count(*)::int as total
+     from chatbot_logs cl
+     left join users u on u.id = cl.user_id
+     ${whereClause}`,
+    params
+  );
+
+  const logParams = [...params, pageSize, offset];
+  const logsResult = await query(
+    `select cl.id,
+            cl.user_id,
+            cl.session_id,
+            coalesce(cl.user_message, cl.message) as user_message,
+            coalesce(cl.bot_reply, cl.reply) as bot_reply,
+            cl.created_at,
+            u.email as user_email,
+            u.name as user_name
+     from chatbot_logs cl
+     left join users u on u.id = cl.user_id
+     ${whereClause}
+     order by cl.created_at desc
+     limit $${logParams.length - 1} offset $${logParams.length}`,
+    logParams
+  );
+
+  res.json({
+    logs: logsResult.rows,
+    page,
+    pageSize,
+    total: countResult.rows[0]?.total || 0
+  });
+});
+
 export default router;

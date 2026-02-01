@@ -9,6 +9,7 @@ import questionRoutes from "./routes/questions.js";
 import subscriptionRoutes from "./routes/subscriptions.js";
 import analyticsRoutes from "./routes/analytics.js";
 import adminRoutes from "./routes/admin.js";
+import adminUploadRoutes from "./routes/adminUpload.js";
 import practiceRoutes from "./routes/practice.js";
 import chatbotRoutes from "./routes/chatbot.js";
 import seedAdmin from "./seed/adminSeed.js";
@@ -57,6 +58,7 @@ app.use("/api/questions", questionRoutes);
 app.use("/api/subscriptions", subscriptionRoutes);
 app.use("/api/analytics", analyticsRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/admin", adminUploadRoutes);
 app.use("/api/practice", practiceRoutes);
 app.use("/api/chatbot", chatbotRoutes);
 
