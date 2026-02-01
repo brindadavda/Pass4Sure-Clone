@@ -6,10 +6,11 @@ import { calculateTotalPages, paginateItems } from "../utils.js";
 const pageSize = 10;
 
 const formatUser = (activity) => {
-  if (!activity.user_email) {
+  if (!activity.user_id) {
     return "Guest";
   }
-  return `${activity.user_name || "User"} (${activity.user_email})`;
+  const label = activity.user_name || activity.user_email || "User";
+  return `${label} (${activity.user_id})`;
 };
 
 const AdminActivity = () => {
@@ -34,6 +35,7 @@ const AdminActivity = () => {
         entry.page,
         entry.user_email,
         entry.user_name,
+        entry.user_id,
         JSON.stringify(entry.details || {})
       ].some((value) => String(value || "").toLowerCase().includes(term))
     );
