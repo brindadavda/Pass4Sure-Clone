@@ -81,6 +81,24 @@ CREATE TABLE IF NOT EXISTS demo_codes (
     ON DELETE CASCADE
 );
 
+------------------------------------------------
+-- USERS ROLE EXTENSION
+------------------------------------------------
+ALTER TABLE users
+ADD COLUMN IF NOT EXISTS role TEXT DEFAULT 'user';
+
+------------------------------------------------
+-- USER ACTIVITY TABLE
+------------------------------------------------
+CREATE TABLE IF NOT EXISTS user_activity (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NULL,
+  activity_type TEXT NOT NULL,
+  page TEXT,
+  details JSONB,
+  created_at TIMESTAMP DEFAULT now()
+);
+
 
 -- Adjust the path to your CSV file
 -- \copy <TABLE_NAME> FROM '<CSV FILE PATH>' DELIMITER ',' CSV HEADER;
