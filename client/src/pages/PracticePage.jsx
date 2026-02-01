@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import axios from "axios";
 
+const PRACTICE_CONTEXT_KEY = "pass4sure_practice_context";
+
 const PracticePage = () => {
   const [subjects, setSubjects] = useState([]);
   const [topics, setTopics] = useState([]);
@@ -109,6 +111,25 @@ const PracticePage = () => {
 
     fetchQuestions();
   }, [API_URL, subjectIdParam, topicIdParam]);
+
+  useEffect(() => {
+    if (!subjectIdParam && !topicIdParam) {
+      localStorage.removeItem(PRACTICE_CONTEXT_KEY);
+      return;
+    }
+
+    const subject = subjects.find(
+      (item) => `${item.subject_id}` === `${subjectIdParam}`
+    );
+    const topic = topics.find((item) => `${item.topic_id}` === `${topicIdParam}`);
+    const context = {
+      subject: subject?.name || subjectIdParam || "",
+      topic: topic?.name || topicIdParam || "",
+      question: questions[0]?.text || "",
+      explanation: questions[0]?.explanation || ""
+    };
+    localStorage.setItem(PRACTICE_CONTEXT_KEY, JSON.stringify(context));
+  }, [subjectIdParam, topicIdParam, subjects, topics, questions]);
 
   // -----------------------------
   // Subject Change Handler

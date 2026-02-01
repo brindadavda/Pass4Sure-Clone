@@ -12,6 +12,8 @@ import LoginPage from "./pages/LoginPage.jsx";
 import SignupPage from "./pages/SignupPage.jsx";
 import AdminPage from "./pages/AdminPage.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import ChatBotWidget from "./components/ChatBotWidget.jsx";
+import ChatbotLogs from "./admin/pages/ChatbotLogs.jsx";
 
 const App = () => (
   <div className="flex min-h-screen flex-col">
@@ -43,9 +45,11 @@ const App = () => (
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/register" element={<SignupPage />} />
         <Route path="/admin" element={<AdminPage />} />
+        <Route path="/admin/chatbot-logs" element={<ChatbotLogs />} />
       </Routes>
     </main>
     <Footer />
+    <ChatBotWidget />
   </div>
 );
 
