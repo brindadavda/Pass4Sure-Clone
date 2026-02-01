@@ -98,7 +98,7 @@ router.delete("/exams/:id", async (req, res) => {
 
 router.get("/questions", async (req, res) => {
   const result = await query(
-    "select id, subject_id, topic_id, atomic_topic_id, text, options, correct_answer, explanation, difficulty, is_demo from questions order by id"
+    "select id, subject_id, topic_id, text, options, correct_answer, explanation, difficulty, is_demo from questions order by id"
   );
   res.json({ questions: result.rows });
 });
@@ -107,7 +107,6 @@ router.post("/questions", async (req, res) => {
   const {
     subjectId,
     topicId,
-    atomicTopicId,
     text,
     options,
     correctAnswer,
@@ -117,8 +116,8 @@ router.post("/questions", async (req, res) => {
   } = req.body;
 
   const result = await query(
-    "insert into questions (subject_id, topic_id, atomic_topic_id, text, options, correct_answer, explanation, difficulty, is_demo) values ($1, $2, $3, $4, $5, $6, $7, $8, $9) returning *",
-    [subjectId, topicId, atomicTopicId, text, options, correctAnswer, explanation, difficulty, isDemo]
+    "insert into questions (subject_id, topic_id, text, options, correct_answer, explanation, difficulty, is_demo) values ($1, $2, $3, $4, $5, $6, $7, $8, $9) returning *",
+    [subjectId, topicId, text, options, correctAnswer, explanation, difficulty, isDemo]
   );
   res.status(201).json({ question: result.rows[0] });
 });
@@ -127,7 +126,6 @@ router.put("/questions/:uuid", async (req, res) => {
   const {
     subjectId,
     topicId,
-    atomicTopicId,
     text,
     options,
     correctAnswer,
@@ -137,11 +135,10 @@ router.put("/questions/:uuid", async (req, res) => {
   } = req.body;
 
   const result = await query(
-    "update questions set subject_id = $1, topic_id = $2, atomic_topic_id = $3, text = $4, options = $5, correct_answer = $6, explanation = $7, difficulty = $8, is_demo = $9 where id = $10 returning *",
+    "update questions set subject_id = $1, topic_id = $2, text = $3, options = $4, correct_answer = $5, explanation = $6, difficulty = $7, is_demo = $8 where id = $9 returning *",
     [
       subjectId,
       topicId,
-      atomicTopicId,
       text,
       options,
       correctAnswer,

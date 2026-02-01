@@ -48,7 +48,6 @@ CREATE TABLE IF NOT EXISTS questions (
 
   subject_id INTEGER,
   topic_id INTEGER,
-  atomic_topic_id INTEGER,
 
   text TEXT NOT NULL,
   options JSONB NOT NULL,

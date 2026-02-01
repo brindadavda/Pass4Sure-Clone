@@ -74,13 +74,14 @@ const AdminQuestions = () => {
 
   const openEdit = (question) => {
     setActiveQuestion(question);
+
     setFormData({
       subjectId: question.subject_id || "",
       topicId: question.topic_id || "",
       text: question.text || "",
-      optionA: question.options?.a || "",
-      optionB: question.options?.b || "",
-      optionC: question.options?.c || "",
+      optionA: question.options?.[0] || "",
+      optionB: question.options?.[1] || "",
+      optionC: question.options?.[2] || "",
       correctAnswer: question.correct_answer || "a",
       explanation: question.explanation || "",
       difficulty: question.difficulty || "medium",
@@ -172,7 +173,35 @@ const AdminQuestions = () => {
                     Subject {question.subject_id} • Topic {question.topic_id} • Difficulty {question.difficulty}
                   </p>
                 </div>
-                <div className="flex gap-2">
+              </div>
+             {/* ✅ Options + Answer + Explanation */}
+              <div className="mt-3 grid gap-2 text-xs text-slate-600">
+                {/* Options in One Line */}
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="font-semibold text-slate-800">
+                    Options:
+                  </span>
+
+                  <span className="whitespace-nowrap">
+                    A) {question.options?.[0]}
+                  </span>
+
+                  <span className="whitespace-nowrap">
+                    B) {question.options?.[1]}
+                  </span>
+
+                  <span className="whitespace-nowrap">
+                    C) {question.options?.[2]}
+                  </span>
+                </div>
+                <div>
+                  <span className="font-semibold text-slate-800">Answer:</span> {question.correct_answer}
+                </div>
+                <div className="sm:col-span-2">
+                  <span className="font-semibold text-slate-800">Explanation:</span> {question.explanation || "-"}
+                </div>
+                 {/* ✅ Buttons always at right */}
+                <div className="flex shrink-0 gap-2">
                   <button
                     className="rounded-md border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-600"
                     onClick={() => openEdit(question)}
@@ -185,18 +214,6 @@ const AdminQuestions = () => {
                   >
                     Delete
                   </button>
-                </div>
-              </div>
-              <div className="mt-3 grid gap-2 text-xs text-slate-600 sm:grid-cols-2">
-                <div>
-                  <span className="font-semibold text-slate-800">Options:</span> A) {question.options?.a} • B)
-                  {question.options?.b} • C) {question.options?.c}
-                </div>
-                <div>
-                  <span className="font-semibold text-slate-800">Answer:</span> {question.correct_answer}
-                </div>
-                <div className="sm:col-span-2">
-                  <span className="font-semibold text-slate-800">Explanation:</span> {question.explanation || "-"}
                 </div>
               </div>
             </div>
