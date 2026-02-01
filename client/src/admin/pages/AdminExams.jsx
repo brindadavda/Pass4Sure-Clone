@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import api from "../../lib/api.js";
 import Modal from "../components/Modal.jsx";
 import Pagination from "../components/Pagination.jsx";
@@ -111,12 +112,20 @@ const AdminExams = () => {
           <h2 className="text-xl font-semibold text-slate-900">Manage Exams</h2>
           <p className="text-sm text-slate-600">Create and maintain the exam catalog.</p>
         </div>
-        <button
-          className="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white"
-          onClick={openAdd}
-        >
-          Add New
-        </button>
+        <div className="flex flex-wrap items-center gap-2">
+          <Link
+            to="/admin/bulk-upload"
+            className="rounded-md border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-600 hover:border-slate-300"
+          >
+            Bulk Upload
+          </Link>
+          <button
+            className="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white"
+            onClick={openAdd}
+          >
+            Add New
+          </button>
+        </div>
       </div>
 
       <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
