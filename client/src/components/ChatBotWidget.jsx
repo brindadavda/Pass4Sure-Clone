@@ -24,6 +24,7 @@ const buildPracticeContext = (pathname) => {
 };
 
 const ChatBotWidget = () => {
+  const { user } = useAuth();
   const location = useLocation();
   const messagesEndRef = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -78,6 +79,10 @@ const ChatBotWidget = () => {
       const response = await api.post("/api/chatbot/message", {
         message: trimmed,
         context: practiceContext,
+        userId: user?.id || null
+      });
+      const reply = response.data.reply ||
+        "Thanks for reaching out. How else can I support you?";
         sessionId
       });
       const reply = response.data.reply ||

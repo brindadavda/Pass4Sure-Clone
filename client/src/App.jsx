@@ -23,6 +23,7 @@ import AdminActivity from "./admin/pages/AdminActivity.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import ChatBotWidget from "./components/ChatBotWidget.jsx";
 import ChatbotLogs from "./admin/pages/ChatbotLogs.jsx";
+import { useAuth } from "./context/AuthContext.jsx";
 import BulkUpload from "./admin/pages/BulkUpload.jsx";
 
 const App = () => (

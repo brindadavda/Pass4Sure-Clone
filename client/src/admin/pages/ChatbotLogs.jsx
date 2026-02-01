@@ -1,5 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import api from "../../lib/api.js";
+
+const getUserLabel = (entry) => {
+  if (!entry.user_id) return "Guest";
+  return entry.user_role
+    ? `${entry.user_role.charAt(0).toUpperCase()}${entry.user_role.slice(1)}`
+    : "User";
 import Pagination from "../components/Pagination.jsx";
 
 const getUserLabel = (entry) => {
@@ -25,6 +31,8 @@ const ChatbotLogs = () => {
       setLoading(true);
       setError("");
       try {
+        const response = await api.get("/api/chatbot/logs");
+        setLogs(response.data.logs || []);
         const response = await api.get("/api/admin/chatbot-logs", {
           params: { page, pageSize, search }
         });
@@ -39,6 +47,7 @@ const ChatbotLogs = () => {
     };
 
     fetchLogs();
+  }, []);
   }, [page, pageSize, search]);
 
   useEffect(() => {
@@ -98,6 +107,11 @@ const ChatbotLogs = () => {
                 )}
                 {rows.map((entry) => (
                   <tr key={entry.id} className="rounded-2xl bg-slate-50 text-slate-700">
+                    <td className="px-4 py-4 font-semibold">
+                      {getUserLabel(entry)}
+                    </td>
+                    <td className="px-4 py-4">{entry.message}</td>
+                    <td className="px-4 py-4">{entry.reply}</td>
                     <td className="px-4 py-4">
                       <div className="font-semibold">{getUserLabel(entry)}</div>
                       {!entry.user_id && entry.session_id && (
