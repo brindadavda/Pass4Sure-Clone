@@ -65,6 +65,23 @@ const AdminPage = () => (
           1,240 active learners • ₹3.2L monthly revenue • 92% renewal rate
         </p>
       </div>
+
+      <div className="mt-8 rounded-2xl border border-slate-200 bg-white p-6">
+        <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+          <div>
+            <h3 className="text-lg font-semibold text-slate-900">Chatbot logs</h3>
+            <p className="text-sm text-slate-600">
+              Review the latest assistant conversations from guests and members.
+            </p>
+          </div>
+          <Link
+            to="/admin/chatbot-logs"
+            className="rounded-md bg-slate-900 px-4 py-2 text-sm font-semibold text-white"
+          >
+            Open full log
+          </Link>
+        </div>
+      </div>
     </div>
   </section>
 );

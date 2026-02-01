@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import api from "../lib/api.js";
-import { useAuth } from "../context/AuthContext.jsx";
 
 const PRACTICE_CONTEXT_KEY = "pass4sure_practice_context";
+const CHATBOT_SESSION_KEY = "pass4sure_chatbot_session";
 
 const buildPracticeContext = (pathname) => {
   if (!pathname.startsWith("/practice")) {
@@ -42,6 +42,16 @@ const ChatBotWidget = () => {
     () => buildPracticeContext(location.pathname),
     [location.pathname]
   );
+  const sessionId = useMemo(() => {
+    const stored = localStorage.getItem(CHATBOT_SESSION_KEY);
+    if (stored) return stored;
+    const freshId =
+      typeof crypto !== "undefined" && crypto.randomUUID
+        ? crypto.randomUUID()
+        : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    localStorage.setItem(CHATBOT_SESSION_KEY, freshId);
+    return freshId;
+  }, []);
 
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -73,6 +83,14 @@ const ChatBotWidget = () => {
       });
       const reply = response.data.reply ||
         "Thanks for reaching out. How else can I support you?";
+        sessionId
+      });
+      const reply = response.data.reply ||
+        "Thanks for reaching out. How else can I support you?";
+      const receivedSessionId = response.data.sessionId;
+      if (receivedSessionId && receivedSessionId !== sessionId) {
+        localStorage.setItem(CHATBOT_SESSION_KEY, receivedSessionId);
+      }
 
       setMessages((prev) => [
         ...prev,
