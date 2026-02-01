@@ -1,21 +1,45 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { useLocation, Link } from "react-router-dom";
 import api from "../../lib/api.js";
 
 const tableOptions = [
+  { value: "exams", label: "Exams" },
   { value: "subjects", label: "Subjects" },
   { value: "topics", label: "Topics" },
   { value: "atomic_topics", label: "Atomic Topics" },
   { value: "questions", label: "Questions" },
-  { value: "demo_codes", label: "Demo Codes" }
+  { value: "demo_codes", label: "Demo Codes" },
+  { value: "users", label: "Users" }
 ];
 
+const tableLinks = {
+  subjects: "/admin/subjects",
+  topics: "/admin/topics",
+  atomic_topics: "/admin/topics",
+  questions: "/admin/questions",
+  demo_codes: "/admin/demo-codes",
+  exams: "/admin/exams",
+  users: "/admin/users"
+};
+
 const BulkUpload = () => {
-  const [tableName, setTableName] = useState(tableOptions[0].value);
+  const location = useLocation();
+  const initialTable = useMemo(() => {
+    const params = new URLSearchParams(location.search);
+    const requested = params.get("table");
+    const match = tableOptions.find((option) => option.value === requested);
+    return match?.value || tableOptions[0].value;
+  }, [location.search]);
+  const [tableName] = useState(initialTable);
   const [file, setFile] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [insertedCount, setInsertedCount] = useState(null);
   const [error, setError] = useState("");
   const [errorRow, setErrorRow] = useState(null);
+
+  const tableLabel =
+    tableOptions.find((option) => option.value === tableName)?.label ||
+    tableName.replace(/_/g, " ");
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -57,30 +81,20 @@ const BulkUpload = () => {
           <div>
             <h2 className="text-2xl font-semibold text-slate-900">Bulk Upload Records</h2>
             <p className="text-sm text-slate-600">
-              Upload CSV files to insert or update large batches of records.
+              Upload CSV files to insert or update {tableLabel} records.
             </p>
           </div>
+          {tableLinks[tableName] && (
+            <Link
+              to={tableLinks[tableName]}
+              className="text-sm font-semibold text-blue-600 hover:text-blue-700"
+            >
+              Back to {tableLabel}
+            </Link>
+          )}
         </div>
 
         <form onSubmit={handleSubmit} className="mt-6 grid gap-4">
-          <div className="grid gap-2">
-            <label className="text-sm font-semibold text-slate-700" htmlFor="tableName">
-              Select table
-            </label>
-            <select
-              id="tableName"
-              value={tableName}
-              onChange={(event) => setTableName(event.target.value)}
-              className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700"
-            >
-              {tableOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
           <div className="grid gap-2">
             <label className="text-sm font-semibold text-slate-700" htmlFor="csvFile">
               Upload CSV file

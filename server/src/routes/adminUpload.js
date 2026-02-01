@@ -35,6 +35,14 @@ const tableConfig = {
     ],
     conflictTarget: "id"
   },
+  exams: {
+    columns: ["id", "title", "category", "price", "validity_days", "description"],
+    conflictTarget: "id"
+  },
+  users: {
+    columns: ["id", "name", "email", "password_hash", "role"],
+    conflictTarget: "email"
+  },
   demo_codes: {
     columns: ["topic_id", "demo_code"],
     conflictTarget: "topic_id"

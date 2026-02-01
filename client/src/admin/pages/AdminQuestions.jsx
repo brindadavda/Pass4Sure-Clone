@@ -147,7 +147,7 @@ const AdminQuestions = () => {
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <Link
-            to="/admin/bulk-upload"
+            to="/admin/bulk-upload?table=questions"
             className="rounded-md border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-600 hover:border-slate-300"
           >
             Bulk Upload

@@ -69,7 +69,7 @@ const AdminUsers = () => {
           <p className="text-sm text-slate-600">Update roles and manage access.</p>
         </div>
         <Link
-          to="/admin/bulk-upload"
+          to="/admin/bulk-upload?table=users"
           className="rounded-md border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-600 hover:border-slate-300"
         >
           Bulk Upload
