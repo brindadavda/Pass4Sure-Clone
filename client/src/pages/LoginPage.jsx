@@ -40,6 +40,12 @@ const LoginPage = () => {
       <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
         <h2 className="text-2xl font-semibold text-slate-900">Log in</h2>
         <p className="mt-2 text-sm text-slate-600">Access your dashboard and subscriptions.</p>
+        {import.meta.env.DEV ? (
+          <div className="mt-4 rounded-xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-700">
+            <p className="font-semibold">Default Admin Login:</p>
+            <p>admin@pass4sure.com / Admin@123</p>
+          </div>
+        ) : null}
         <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
           <div>
             <label className="text-sm font-medium text-slate-700" htmlFor="email">

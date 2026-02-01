@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { z } from "zod";
 import { query } from "../db/index.js";
-import { authenticate } from "../middleware/auth.js";
+import { authenticate, logLogoutActivity } from "../middleware/auth.js";
 
 const router = express.Router();
 
@@ -78,6 +78,15 @@ router.post("/login", async (req, res) => {
     { expiresIn: "7d" }
   );
 
+  try {
+    await query(
+      "insert into user_activity (user_id, activity_type, page, details) values ($1, $2, $3, $4)",
+      [user.id, "login", req.originalUrl, { email: user.email }]
+    );
+  } catch (error) {
+    console.error("Failed to log login activity", error.message);
+  }
+
   return res.json({
     token,
     user: { id: user.id, name: user.name, email: user.email, role: user.role }
@@ -98,6 +107,10 @@ router.get("/me", authenticate, async (req, res) => {
 
 router.post("/forgot-password", async (req, res) => {
   return res.json({ message: "Password reset link sent if account exists." });
+});
+
+router.post("/logout", authenticate, logLogoutActivity, async (req, res) => {
+  return res.json({ message: "Logged out" });
 });
 
 export default router;

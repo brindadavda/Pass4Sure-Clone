@@ -10,7 +10,16 @@ import SettingsPage from "./pages/SettingsPage.jsx";
 import CheckoutPage from "./pages/CheckoutPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import SignupPage from "./pages/SignupPage.jsx";
-import AdminPage from "./pages/AdminPage.jsx";
+import AdminLayout from "./admin/AdminLayout.jsx";
+import AdminProtectedRoute from "./admin/AdminProtectedRoute.jsx";
+import AdminDashboard from "./admin/pages/AdminDashboard.jsx";
+import AdminExams from "./admin/pages/AdminExams.jsx";
+import AdminSubjects from "./admin/pages/AdminSubjects.jsx";
+import AdminTopics from "./admin/pages/AdminTopics.jsx";
+import AdminQuestions from "./admin/pages/AdminQuestions.jsx";
+import AdminDemoCodes from "./admin/pages/AdminDemoCodes.jsx";
+import AdminUsers from "./admin/pages/AdminUsers.jsx";
+import AdminActivity from "./admin/pages/AdminActivity.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 const App = () => (
@@ -42,7 +51,23 @@ const App = () => (
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/register" element={<SignupPage />} />
-        <Route path="/admin" element={<AdminPage />} />
+        <Route
+          path="/admin/*"
+          element={
+            <AdminProtectedRoute>
+              <AdminLayout />
+            </AdminProtectedRoute>
+          }
+        >
+          <Route index element={<AdminDashboard />} />
+          <Route path="exams" element={<AdminExams />} />
+          <Route path="subjects" element={<AdminSubjects />} />
+          <Route path="topics" element={<AdminTopics />} />
+          <Route path="questions" element={<AdminQuestions />} />
+          <Route path="demo-codes" element={<AdminDemoCodes />} />
+          <Route path="users" element={<AdminUsers />} />
+          <Route path="activity" element={<AdminActivity />} />
+        </Route>
       </Routes>
     </main>
     <Footer />

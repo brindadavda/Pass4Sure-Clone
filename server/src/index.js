@@ -10,10 +10,15 @@ import subscriptionRoutes from "./routes/subscriptions.js";
 import analyticsRoutes from "./routes/analytics.js";
 import adminRoutes from "./routes/admin.js";
 import practiceRoutes from "./routes/practice.js";
+import seedAdmin from "./seed/adminSeed.js";
+import seedActivityTable from "./seed/activitySeed.js";
 
 dotenv.config();
 
 const app = express();
+
+await seedActivityTable();
+await seedAdmin();
 
 // Parse comma-separated origins from env
 const allowedOrigins = process.env.CORS_ORIGINS

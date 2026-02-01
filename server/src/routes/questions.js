@@ -1,6 +1,7 @@
 import express from "express";
 import { query } from "../db/index.js";
 import { authenticate } from "../middleware/auth.js";
+import { logActivity } from "../middleware/activityLogger.js";
 
 const router = express.Router();
 
@@ -18,6 +19,16 @@ router.post("/response", authenticate, async (req, res) => {
     "insert into user_responses (user_id, question_id, user_answer, is_correct) values ($1, $2, $3, $4)",
     [req.user.sub, questionId, answer, isCorrect]
   );
+  try {
+    await logActivity({
+      userId: req.user.sub,
+      activityType: "submit_answer",
+      page: req.originalUrl,
+      details: { questionId, isCorrect }
+    });
+  } catch (error) {
+    console.error("Failed to log answer activity", error.message);
+  }
   res.json({ message: "Response recorded" });
 });
 
