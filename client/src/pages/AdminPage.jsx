@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 const AdminPage = () => (
   <section className="mx-auto max-w-6xl px-6 py-12">
     <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
@@ -8,9 +10,17 @@ const AdminPage = () => (
             Manage exams, questions, pricing, and subscriptions from one place.
           </p>
         </div>
-        <button className="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white">
-          Add new exam
-        </button>
+        <div className="flex flex-wrap gap-3">
+          <Link
+            to="/admin/chatbot-logs"
+            className="rounded-md border border-blue-600 px-4 py-2 text-sm font-semibold text-blue-600"
+          >
+            View chatbot logs
+          </Link>
+          <button className="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white">
+            Add new exam
+          </button>
+        </div>
       </div>
 
       <div className="mt-8 grid gap-6 md:grid-cols-2">
@@ -54,6 +64,23 @@ const AdminPage = () => (
         <p className="mt-2">
           1,240 active learners • ₹3.2L monthly revenue • 92% renewal rate
         </p>
+      </div>
+
+      <div className="mt-8 rounded-2xl border border-slate-200 bg-white p-6">
+        <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+          <div>
+            <h3 className="text-lg font-semibold text-slate-900">Chatbot logs</h3>
+            <p className="text-sm text-slate-600">
+              Review the latest assistant conversations from guests and members.
+            </p>
+          </div>
+          <Link
+            to="/admin/chatbot-logs"
+            className="rounded-md bg-slate-900 px-4 py-2 text-sm font-semibold text-white"
+          >
+            Open full log
+          </Link>
+        </div>
       </div>
     </div>
   </section>

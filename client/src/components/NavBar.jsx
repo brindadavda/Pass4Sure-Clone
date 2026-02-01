@@ -55,9 +55,11 @@ const NavBar = () => {
           <NavLink to="/practice" className={linkClass}>
             Practice
           </NavLink>
-          <NavLink to="/admin" className={linkClass}>
-            Admin
-          </NavLink>
+          {user?.role === "admin" && (
+            <NavLink to="/admin" className={linkClass}>
+              Admin
+            </NavLink>
+          )}
         </nav>
         <div className="flex items-center gap-2">
           {user ? (
@@ -145,9 +147,11 @@ const NavBar = () => {
             >
               Practice
             </NavLink>
-            <NavLink to="/admin" className={linkClass} onClick={() => setIsMenuOpen(false)}>
-              Admin
-            </NavLink>
+            {user?.role === "admin" && (
+              <NavLink to="/admin" className={linkClass} onClick={() => setIsMenuOpen(false)}>
+                Admin
+              </NavLink>
+            )}
             {user ? (
               <div className="mt-2 flex items-center gap-3">
                 <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-100 text-sm font-semibold text-blue-700">

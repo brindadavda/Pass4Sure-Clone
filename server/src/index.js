@@ -10,6 +10,7 @@ import subscriptionRoutes from "./routes/subscriptions.js";
 import analyticsRoutes from "./routes/analytics.js";
 import adminRoutes from "./routes/admin.js";
 import practiceRoutes from "./routes/practice.js";
+import chatbotRoutes from "./routes/chatbot.js";
 
 dotenv.config();
 
@@ -52,6 +53,7 @@ app.use("/api/subscriptions", subscriptionRoutes);
 app.use("/api/analytics", analyticsRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/practice", practiceRoutes);
+app.use("/api/chatbot", chatbotRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ message: "Not found" });

@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import NavBar from "./components/NavBar.jsx";
 import Footer from "./components/Footer.jsx";
 import LandingPage from "./pages/LandingPage.jsx";
@@ -12,41 +12,64 @@ import LoginPage from "./pages/LoginPage.jsx";
 import SignupPage from "./pages/SignupPage.jsx";
 import AdminPage from "./pages/AdminPage.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import ChatBotWidget from "./components/ChatBotWidget.jsx";
+import ChatbotLogs from "./admin/pages/ChatbotLogs.jsx";
+import { useAuth } from "./context/AuthContext.jsx";
 
-const App = () => (
-  <div className="flex min-h-screen flex-col">
-    <NavBar />
-    <main className="flex-1">
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/exams" element={<ExamsPage />} />
-        <Route
-          path="/practice"
-          element={
-            // <ProtectedRoute>
-              <PracticePage />
-            // </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/practice/:subjectId/topics/:topicId"
-          element={
-            // <ProtectedRoute>
-              <PracticeTestPage />
-            // </ProtectedRoute>
-          }
-        />
-        <Route path="/dashboard" element={<DashboardPage />} />
-        <Route path="/settings" element={<SettingsPage />} />
-        <Route path="/checkout" element={<CheckoutPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/signup" element={<SignupPage />} />
-        <Route path="/register" element={<SignupPage />} />
-        <Route path="/admin" element={<AdminPage />} />
-      </Routes>
-    </main>
-    <Footer />
-  </div>
-);
+const App = () => {
+  const { user } = useAuth();
+
+  return (
+    <div className="flex min-h-screen flex-col">
+      <NavBar />
+      <main className="flex-1">
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/exams" element={<ExamsPage />} />
+          <Route
+            path="/practice"
+            element={
+              // <ProtectedRoute>
+                <PracticePage />
+              // </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/practice/:subjectId/topics/:topicId"
+            element={
+              // <ProtectedRoute>
+                <PracticeTestPage />
+              // </ProtectedRoute>
+            }
+          />
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
+          <Route path="/register" element={<SignupPage />} />
+          <Route
+            path="/admin"
+            element={
+              user?.role === "admin" ? <AdminPage /> : <Navigate to="/" replace />
+            }
+          />
+          <Route
+            path="/admin/chatbot-logs"
+            element={
+              user?.role === "admin" ? (
+                <ChatbotLogs />
+              ) : (
+                <Navigate to="/" replace />
+              )
+            }
+          />
+        </Routes>
+      </main>
+      <Footer />
+      <ChatBotWidget />
+    </div>
+  );
+};
 
 export default App;
