@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import api from "../lib/api.js";
+import { useAuth } from ".././context/AuthContext.jsx";
 
 const PRACTICE_CONTEXT_KEY = "pass4sure_practice_context";
 const CHATBOT_SESSION_KEY = "pass4sure_chatbot_session";
@@ -80,10 +81,6 @@ const ChatBotWidget = () => {
         message: trimmed,
         context: practiceContext,
         userId: user?.id || null
-      });
-      const reply = response.data.reply ||
-        "Thanks for reaching out. How else can I support you?";
-        sessionId
       });
       const reply = response.data.reply ||
         "Thanks for reaching out. How else can I support you?";
