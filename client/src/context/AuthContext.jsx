@@ -30,9 +30,15 @@ export const AuthProvider = ({ children }) => {
     return response.data;
   };
 
-  const logout = () => {
-    setToken(null);
-    setUser(null);
+  const logout = async () => {
+    try {
+      await api.post("/api/auth/logout");
+    } catch (error) {
+      // ignore logout errors
+    } finally {
+      setToken(null);
+      setUser(null);
+    }
   };
 
   useEffect(() => {
