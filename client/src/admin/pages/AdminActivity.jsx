@@ -5,12 +5,11 @@ import { calculateTotalPages, paginateItems } from "../utils.js";
 
 const pageSize = 10;
 
-const formatUser = (activity) => {
+const formatUserName = (activity) => {
   if (!activity.user_id) {
     return "Guest";
   }
-  const label = activity.user_name || activity.user_email || "User";
-  return `${label} (${activity.user_id})`;
+  return activity.user_name || activity.user_email || "User";
 };
 
 const AdminActivity = () => {
@@ -68,6 +67,7 @@ const AdminActivity = () => {
               <tr>
                 <th className="px-3 py-2">Timestamp</th>
                 <th className="px-3 py-2">User</th>
+                <th className="px-3 py-2">User ID</th>
                 <th className="px-3 py-2">Activity</th>
                 <th className="px-3 py-2">Page</th>
                 <th className="px-3 py-2">Details</th>
@@ -79,7 +79,8 @@ const AdminActivity = () => {
                   <td className="px-3 py-2 text-slate-600">
                     {new Date(entry.created_at).toLocaleString()}
                   </td>
-                  <td className="px-3 py-2 text-slate-700">{formatUser(entry)}</td>
+                  <td className="px-3 py-2 text-slate-700">{formatUserName(entry)}</td>
+                  <td className="px-3 py-2 text-xs text-slate-500">{entry.user_id || "--"}</td>
                   <td className="px-3 py-2 text-slate-700">{entry.activity_type}</td>
                   <td className="px-3 py-2 text-slate-500">{entry.page}</td>
                   <td className="px-3 py-2 text-xs text-slate-500">
