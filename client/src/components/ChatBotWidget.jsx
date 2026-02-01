@@ -83,10 +83,6 @@ const ChatBotWidget = () => {
       });
       const reply = response.data.reply ||
         "Thanks for reaching out. How else can I support you?";
-        sessionId
-      });
-      const reply = response.data.reply ||
-        "Thanks for reaching out. How else can I support you?";
       const receivedSessionId = response.data.sessionId;
       if (receivedSessionId && receivedSessionId !== sessionId) {
         localStorage.setItem(CHATBOT_SESSION_KEY, receivedSessionId);
