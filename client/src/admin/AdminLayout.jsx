@@ -9,7 +9,8 @@ const navItems = [
   { label: "Manage Questions", to: "/admin/questions" },
   { label: "Manage Demo Codes", to: "/admin/demo-codes" },
   { label: "Manage Users", to: "/admin/users" },
-  { label: "User Activity Logs", to: "/admin/activity" }
+  { label: "User Activity Logs", to: "/admin/activity" },
+  { label: "💬 Chatbot Logs", to: "/admin/chatbot-logs" }
 ];
 
 const AdminLayout = () => {

@@ -1,18 +1,22 @@
 import { useEffect, useMemo, useState } from "react";
 import api from "../../lib/api.js";
+import Pagination from "../components/Pagination.jsx";
 
 const getUserLabel = (entry) => {
-  if (!entry.user_id) return "Guest";
   if (entry.user_name) return entry.user_name;
-  return entry.user_role
-    ? `${entry.user_role.charAt(0).toUpperCase()}${entry.user_role.slice(1)}`
-    : "User";
+  if (entry.user_email) return entry.user_email;
+  if (!entry.user_id) return "Guest";
+  return "User";
 };
 
 const ChatbotLogs = () => {
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(10);
+  const [total, setTotal] = useState(0);
+  const [search, setSearch] = useState("");
 
   const rows = useMemo(() => logs, [logs]);
 
@@ -21,8 +25,11 @@ const ChatbotLogs = () => {
       setLoading(true);
       setError("");
       try {
-        const response = await api.get("/api/chatbot/logs");
+        const response = await api.get("/api/admin/chatbot-logs", {
+          params: { page, pageSize, search }
+        });
         setLogs(response.data.logs || []);
+        setTotal(response.data.total || 0);
       } catch (fetchError) {
         console.error("Failed to load chatbot logs", fetchError);
         setError("Unable to load chatbot logs right now.");
@@ -32,7 +39,13 @@ const ChatbotLogs = () => {
     };
 
     fetchLogs();
-  }, []);
+  }, [page, pageSize, search]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [search]);
+
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
   return (
     <section className="mx-auto max-w-6xl px-6 py-12">
@@ -43,6 +56,14 @@ const ChatbotLogs = () => {
             <p className="text-sm text-slate-600">
               Review assistant conversations from guests and members.
             </p>
+          </div>
+          <div className="w-full md:w-64">
+            <input
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="Search by user or message"
+              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700"
+            />
           </div>
         </div>
 
@@ -62,7 +83,6 @@ const ChatbotLogs = () => {
               <thead>
                 <tr className="text-left text-slate-500">
                   <th className="px-4">User</th>
-                  <th className="px-4">User ID</th>
                   <th className="px-4">Message</th>
                   <th className="px-4">Reply</th>
                   <th className="px-4">Timestamp</th>
@@ -71,21 +91,21 @@ const ChatbotLogs = () => {
               <tbody>
                 {rows.length === 0 && (
                   <tr>
-                    <td colSpan={5} className="px-4 py-6 text-center text-slate-500">
+                    <td colSpan={4} className="px-4 py-6 text-center text-slate-500">
                       No chatbot conversations yet.
                     </td>
                   </tr>
                 )}
                 {rows.map((entry) => (
                   <tr key={entry.id} className="rounded-2xl bg-slate-50 text-slate-700">
-                    <td className="px-4 py-4 font-semibold">
-                      {getUserLabel(entry)}
+                    <td className="px-4 py-4">
+                      <div className="font-semibold">{getUserLabel(entry)}</div>
+                      {!entry.user_id && entry.session_id && (
+                        <div className="text-xs text-slate-400">Session {entry.session_id}</div>
+                      )}
                     </td>
-                    <td className="px-4 py-4 text-xs text-slate-500">
-                      {entry.user_id || "--"}
-                    </td>
-                    <td className="px-4 py-4">{entry.message}</td>
-                    <td className="px-4 py-4">{entry.reply}</td>
+                    <td className="px-4 py-4">{entry.user_message}</td>
+                    <td className="px-4 py-4">{entry.bot_reply}</td>
                     <td className="px-4 py-4 text-xs text-slate-500">
                       {new Date(entry.created_at).toLocaleString()}
                     </td>
@@ -93,6 +113,7 @@ const ChatbotLogs = () => {
                 ))}
               </tbody>
             </table>
+            <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
           </div>
         )}
       </div>

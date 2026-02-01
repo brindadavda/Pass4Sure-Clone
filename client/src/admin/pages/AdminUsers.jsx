@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import api from "../../lib/api.js";
 import Modal from "../components/Modal.jsx";
 import Pagination from "../components/Pagination.jsx";
@@ -67,6 +68,12 @@ const AdminUsers = () => {
           <h2 className="text-xl font-semibold text-slate-900">Manage Users</h2>
           <p className="text-sm text-slate-600">Update roles and manage access.</p>
         </div>
+        <Link
+          to="/admin/bulk-upload?table=users"
+          className="rounded-md border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-600 hover:border-slate-300"
+        >
+          Bulk Upload
+        </Link>
       </div>
 
       <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
