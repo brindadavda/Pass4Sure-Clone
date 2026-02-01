@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 
+const PRACTICE_CONTEXT_KEY = "pass4sure_practice_context";
+
 const shuffleArray = (items) => {
   const array = [...items];
   for (let i = array.length - 1; i > 0; i -= 1) {
@@ -44,6 +46,19 @@ const PracticeTestPage = () => {
       fetchQuestions();
     }
   }, [API_URL, subjectId, topicId]);
+
+  useEffect(() => {
+    if (!topicName && questions.length === 0) {
+      return;
+    }
+    const context = {
+      subject: subjectId,
+      topic: topicName || topicId,
+      question: questions[0]?.text || "",
+      explanation: questions[0]?.explanation || ""
+    };
+    localStorage.setItem(PRACTICE_CONTEXT_KEY, JSON.stringify(context));
+  }, [subjectId, topicId, topicName, questions]);
 
   useEffect(() => {
     const fetchTopicName = async () => {

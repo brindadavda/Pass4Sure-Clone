@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import NavBar from "./components/NavBar.jsx";
 import Footer from "./components/Footer.jsx";
 import LandingPage from "./pages/LandingPage.jsx";
@@ -21,6 +21,9 @@ import AdminDemoCodes from "./admin/pages/AdminDemoCodes.jsx";
 import AdminUsers from "./admin/pages/AdminUsers.jsx";
 import AdminActivity from "./admin/pages/AdminActivity.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import ChatBotWidget from "./components/ChatBotWidget.jsx";
+import ChatbotLogs from "./admin/pages/ChatbotLogs.jsx";
+import { useAuth } from "./context/AuthContext.jsx";
 
 const App = () => (
   <div className="flex min-h-screen flex-col">

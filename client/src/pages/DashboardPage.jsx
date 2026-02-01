@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import StatCard from "../components/StatCard.jsx";
+import { useAuth } from "../context/AuthContext.jsx";
 
 const DashboardPage = () => {
+  const { user } = useAuth();
   const [exams, setExams] = useState([]);
   const [loadingExams, setLoadingExams] = useState(false);
 
@@ -64,7 +66,7 @@ const DashboardPage = () => {
         <div className="space-y-6">
           <div>
             <h2 className="text-3xl font-semibold text-slate-900">
-              Welcome back, Ananya
+              Welcome back, {user?.name || "Learner"}
             </h2>
             <p className="mt-2 text-sm text-slate-600">
               Track your available exams and subscription highlights.
